@@ -1,0 +1,325 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="480" viewBox="0 0 1280 480">
+  <defs>
+    <filter id="sh" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1e2d45" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4f6fb"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1280" height="480" fill="url(#bg)"/>
+
+  <text x="640" y="16" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="16" font-weight="700" fill="#1e2d45">
+    Jerarquia de la escena: PlayGroundLevel
+  </text>
+
+  <!-- ROOT -->
+  <rect x="468" y="22" width="344" height="50" rx="10" ry="10"
+        fill="#1e2d45" filter="url(#sh)"/>
+  <text x="640" y="45" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="15" font-weight="700" fill="#ffffff">PlayGroundLevel</text>
+  <text x="640" y="62" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#7090c0">Scene Root</text>
+
+  <!-- Root → trunk -->
+  <line x1="640" y1="72" x2="640" y2="92" stroke="#8090a8" stroke-width="1.8"/>
+
+  <!-- TRUNK NIVEL 1 -->
+  <line x1="80"   y1="92" x2="1150" y2="92"  stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="80"   y1="92" x2="80"   y2="100" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="220"  y1="92" x2="220"  y2="100" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="360"  y1="92" x2="360"  y2="100" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="565"  y1="92" x2="565"  y2="100" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="1000" y1="92" x2="1000" y2="100" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="1150" y1="92" x2="1150" y2="100" stroke="#8090a8" stroke-width="1.8"/>
+
+  <!-- NIVEL 1: Main Camera -->
+  <rect x="15" y="100" width="130" height="65" rx="8" ry="8"
+        fill="#e0ecff" stroke="#4070c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="15" y="100" width="130" height="5" rx="8" ry="8" fill="#4070c0"/>
+  <rect x="15" y="103" width="130" height="2" fill="#4070c0"/>
+  <text x="80" y="119" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Main Camera</text>
+  <text x="80" y="134" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3060a0">Camera</text>
+  <text x="80" y="149" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3060a0">CameraController.cs</text>
+
+  <!-- NIVEL 1: Directional Light -->
+  <rect x="155" y="100" width="130" height="65" rx="8" ry="8"
+        fill="#f0f2f8" stroke="#7080a0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="155" y="100" width="130" height="5" rx="8" ry="8" fill="#6078a0"/>
+  <rect x="155" y="103" width="130" height="2" fill="#6078a0"/>
+  <text x="220" y="122" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Directional Light</text>
+  <text x="220" y="141" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#5070a0">Light</text>
+
+  <!-- NIVEL 1: EventSystem -->
+  <rect x="295" y="100" width="130" height="65" rx="8" ry="8"
+        fill="#f0f2f8" stroke="#7080a0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="295" y="100" width="130" height="5" rx="8" ry="8" fill="#6078a0"/>
+  <rect x="295" y="103" width="130" height="2" fill="#6078a0"/>
+  <text x="360" y="122" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">EventSystem</text>
+  <text x="360" y="141" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#5070a0">EventSystem</text>
+
+  <!-- NIVEL 1: HeadUpDisplay -->
+  <rect x="500" y="100" width="130" height="65" rx="8" ry="8"
+        fill="#ede0ff" stroke="#7040c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="500" y="100" width="130" height="5" rx="8" ry="8" fill="#7040c0"/>
+  <rect x="500" y="103" width="130" height="2" fill="#7040c0"/>
+  <text x="565" y="117" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">HeadUpDisplay</text>
+  <text x="565" y="131" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">Canvas</text>
+  <text x="565" y="145" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">HUDController.cs</text>
+
+  <!-- NIVEL 1: LevelGenerator -->
+  <rect x="935" y="100" width="130" height="65" rx="8" ry="8"
+        fill="#e0ecff" stroke="#4070c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="935" y="100" width="130" height="5" rx="8" ry="8" fill="#4070c0"/>
+  <rect x="935" y="103" width="130" height="2" fill="#4070c0"/>
+  <text x="1000" y="117" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">LevelGenerator</text>
+  <text x="1000" y="131" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3060a0">LevelGenerator.cs</text>
+  <text x="1000" y="145" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3060a0">+ TilemapFiller.cs</text>
+
+  <!-- NIVEL 1: Grid -->
+  <rect x="1085" y="100" width="130" height="65" rx="8" ry="8"
+        fill="#e4f5e4" stroke="#50a050" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="1085" y="100" width="130" height="5" rx="8" ry="8" fill="#408040"/>
+  <rect x="1085" y="103" width="130" height="2" fill="#408040"/>
+  <text x="1150" y="122" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Grid</text>
+  <text x="1150" y="141" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a703a">Grid Component</text>
+
+  <!-- HeadUpDisplay → trunk nivel 2 -->
+  <line x1="565" y1="165" x2="565" y2="208" stroke="#7040c0" stroke-width="1.8"/>
+
+  <!-- TRUNK NIVEL 2 (HUDRoots) -->
+  <line x1="358" y1="208" x2="772" y2="208" stroke="#7040c0" stroke-width="1.8"/>
+  <line x1="358" y1="208" x2="358" y2="216" stroke="#7040c0" stroke-width="1.8"/>
+  <line x1="496" y1="208" x2="496" y2="216" stroke="#7040c0" stroke-width="1.8"/>
+  <line x1="634" y1="208" x2="634" y2="216" stroke="#7040c0" stroke-width="1.8"/>
+  <line x1="772" y1="208" x2="772" y2="216" stroke="#7040c0" stroke-width="1.8"/>
+
+  <!-- Grid → Tilemap -->
+  <line x1="1150" y1="165" x2="1150" y2="216" stroke="#408040" stroke-width="1.8"/>
+
+  <!-- NIVEL 2: YellowHUDRoot -->
+  <rect x="293" y="216" width="130" height="65" rx="8" ry="8"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="293" y="216" width="130" height="5" rx="8" ry="8" fill="#9060c0"/>
+  <rect x="293" y="219" width="130" height="2" fill="#9060c0"/>
+  <text x="358" y="234" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">YellowHUDRoot</text>
+  <text x="358" y="249" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">Empty · slot</text>
+  <text x="358" y="263" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">amarillo</text>
+
+  <!-- NIVEL 2: RedHUDRoot -->
+  <rect x="431" y="216" width="130" height="65" rx="8" ry="8"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="431" y="216" width="130" height="5" rx="8" ry="8" fill="#9060c0"/>
+  <rect x="431" y="219" width="130" height="2" fill="#9060c0"/>
+  <text x="496" y="234" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">RedHUDRoot</text>
+  <text x="496" y="249" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">Empty · slot</text>
+  <text x="496" y="263" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">rojo</text>
+
+  <!-- NIVEL 2: PurpleHUDRoot -->
+  <rect x="569" y="216" width="130" height="65" rx="8" ry="8"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="569" y="216" width="130" height="5" rx="8" ry="8" fill="#9060c0"/>
+  <rect x="569" y="219" width="130" height="2" fill="#9060c0"/>
+  <text x="634" y="234" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">PurpleHUDRoot</text>
+  <text x="634" y="249" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">Empty · slot</text>
+  <text x="634" y="263" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">morado</text>
+
+  <!-- NIVEL 2: GreenHUDRoot -->
+  <rect x="707" y="216" width="130" height="65" rx="8" ry="8"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="707" y="216" width="130" height="5" rx="8" ry="8" fill="#9060c0"/>
+  <rect x="707" y="219" width="130" height="2" fill="#9060c0"/>
+  <text x="772" y="234" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">GreenHUDRoot</text>
+  <text x="772" y="249" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">Empty · slot</text>
+  <text x="772" y="263" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">verde</text>
+
+  <!-- NIVEL 2: Tilemap -->
+  <rect x="1085" y="216" width="130" height="65" rx="8" ry="8"
+        fill="#d8f0d8" stroke="#3da03d" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="1085" y="216" width="130" height="5" rx="8" ry="8" fill="#3da03d"/>
+  <rect x="1085" y="219" width="130" height="2" fill="#3da03d"/>
+  <text x="1150" y="238" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Tilemap</text>
+  <text x="1150" y="256" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#2a7a2a">Mapa principal</text>
+
+  <!-- HUDRoots → level 3 -->
+  <line x1="358"  y1="281" x2="358"  y2="324" stroke="#9060c0" stroke-width="1.8"/>
+  <line x1="496"  y1="281" x2="496"  y2="324" stroke="#a0a0b8" stroke-width="1.5"/>
+  <line x1="634"  y1="281" x2="634"  y2="324" stroke="#a0a0b8" stroke-width="1.5"/>
+  <line x1="772"  y1="281" x2="772"  y2="324" stroke="#a0a0b8" stroke-width="1.5"/>
+  <!-- Tilemap → Player -->
+  <line x1="1150" y1="281" x2="1150" y2="324" stroke="#4070c0" stroke-width="1.8"/>
+
+  <!-- NIVEL 3: Yellow summary (expanded) -->
+  <rect x="293" y="324" width="130" height="65" rx="8" ry="8"
+        fill="#fff7db" stroke="#e0a020" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="293" y="324" width="130" height="5" rx="8" ry="8" fill="#e0a020"/>
+  <rect x="293" y="327" width="130" height="2" fill="#e0a020"/>
+  <text x="358" y="342" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">10 x Image</text>
+  <text x="358" y="357" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#806010">Char · Heart · Key</text>
+  <text x="358" y="372" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#806010">Diamond + digitos</text>
+
+  <!-- NIVEL 3: Red "(misma estructura)" -->
+  <rect x="431" y="324" width="130" height="65" rx="8" ry="8"
+        fill="#f4f4f8" stroke="#a0a0b8" stroke-width="1.2" filter="url(#sh)"/>
+  <rect x="431" y="324" width="130" height="4" rx="8" ry="8" fill="#a0a0b8"/>
+  <rect x="431" y="327" width="130" height="2" fill="#a0a0b8"/>
+  <text x="496" y="348" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-style="italic" fill="#606080">(misma</text>
+  <text x="496" y="365" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-style="italic" fill="#606080">estructura)</text>
+
+  <!-- NIVEL 3: Purple "(misma estructura)" -->
+  <rect x="569" y="324" width="130" height="65" rx="8" ry="8"
+        fill="#f4f4f8" stroke="#a0a0b8" stroke-width="1.2" filter="url(#sh)"/>
+  <rect x="569" y="324" width="130" height="4" rx="8" ry="8" fill="#a0a0b8"/>
+  <rect x="569" y="327" width="130" height="2" fill="#a0a0b8"/>
+  <text x="634" y="348" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-style="italic" fill="#606080">(misma</text>
+  <text x="634" y="365" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-style="italic" fill="#606080">estructura)</text>
+
+  <!-- NIVEL 3: Green "(misma estructura)" -->
+  <rect x="707" y="324" width="130" height="65" rx="8" ry="8"
+        fill="#f4f4f8" stroke="#a0a0b8" stroke-width="1.2" filter="url(#sh)"/>
+  <rect x="707" y="324" width="130" height="4" rx="8" ry="8" fill="#a0a0b8"/>
+  <rect x="707" y="327" width="130" height="2" fill="#a0a0b8"/>
+  <text x="772" y="348" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-style="italic" fill="#606080">(misma</text>
+  <text x="772" y="365" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-style="italic" fill="#606080">estructura)</text>
+
+  <!-- NIVEL 3: Player -->
+  <rect x="1085" y="324" width="130" height="65" rx="8" ry="8"
+        fill="#e0ecff" stroke="#4070c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="1085" y="324" width="130" height="5" rx="8" ry="8" fill="#4070c0"/>
+  <rect x="1085" y="327" width="130" height="2" fill="#4070c0"/>
+  <text x="1150" y="342" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Player</text>
+  <text x="1150" y="357" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3060a0">PlayerController.cs</text>
+  <text x="1150" y="372" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3060a0">+ UniqueEntity</text>
+
+  <!-- NOTA RUNTIME -->
+  <rect x="10" y="403" width="755" height="36" rx="7" ry="7"
+        fill="#f8f9fe" stroke="#8090a8" stroke-width="1.2" stroke-dasharray="5 3"/>
+  <text x="22" y="418" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" fill="#3a4a6a" font-weight="600">Instanciados en runtime por LevelGenerator:</text>
+  <text x="22" y="432" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" fill="#5a6a8a">Paredes · Esquinas · Puertas · Cofre · EnemySpawners · Enemigos · Llaves · Diamantes · Decorativos</text>
+
+  <!-- LEYENDA -->
+  <rect x="775" y="403" width="495" height="66" rx="8" ry="8"
+        fill="#ffffff" fill-opacity="0.82" stroke="#c0cce0" stroke-width="1.2"/>
+  <text x="790" y="418" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-weight="700" fill="#1e2d45">Leyenda</text>
+
+  <rect x="790" y="424" width="11" height="11" rx="3" ry="3"
+        fill="#f0f2f8" stroke="#7080a0" stroke-width="1"/>
+  <text x="806" y="434" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" fill="#3a4a6a">Unity estandar</text>
+
+  <rect x="790" y="440" width="11" height="11" rx="3" ry="3"
+        fill="#e0ecff" stroke="#4070c0" stroke-width="1"/>
+  <text x="806" y="450" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" fill="#3a4a6a">Script personalizado</text>
+
+  <rect x="790" y="456" width="11" height="11" rx="3" ry="3"
+        fill="#e4f5e4" stroke="#50a050" stroke-width="1"/>
+  <text x="806" y="466" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" fill="#3a4a6a">Grid / Tilemap</text>
+
+  <rect x="940" y="424" width="11" height="11" rx="3" ry="3"
+        fill="#ede0ff" stroke="#7040c0" stroke-width="1"/>
+  <text x="956" y="434" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" fill="#3a4a6a">Canvas + script</text>
+
+  <rect x="940" y="440" width="11" height="11" rx="3" ry="3"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1"/>
+  <text x="956" y="450" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" fill="#3a4a6a">Contenedor UI vacio</text>
+
+  <rect x="940" y="456" width="11" height="11" rx="3" ry="3"
+        fill="#fff7db" stroke="#e0a020" stroke-width="1"/>
+  <text x="956" y="466" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" fill="#3a4a6a">Resumen de hijos</text>
+</svg>

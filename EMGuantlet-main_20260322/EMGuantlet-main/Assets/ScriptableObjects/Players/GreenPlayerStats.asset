@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b05318e84c0094784c806b5db6d0e9, type: 3}
+  m_Name: GreenPlayerStats
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  characterName: Green
+  characterIcon: {fileID: 940857083, guid: da2579e1a42a9bc49b4a949f243058a8, type: 3}
+  moveSpeed: 3
+  maxHealth: 99
+  attackDamage: 50
+  knockbackForce: 10
+  knockbackDuration: 0.2
+  animatorController: {fileID: 9100000, guid: 76772c16218fc734d92e062a0466a3a4, type: 2}
+  speedBonus: 1.25
+  attackCooldown: 0.5

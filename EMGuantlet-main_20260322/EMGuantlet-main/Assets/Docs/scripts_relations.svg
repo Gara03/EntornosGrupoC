@@ -1,0 +1,630 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="960" viewBox="0 0 1500 960">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4f6fb"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <filter id="sh" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1e2d45" flood-opacity="0.10"/>
+    </filter>
+    <!-- Herencia -->
+    <marker id="aI" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L8,3.5 L0,7 Z" fill="#8090a8"/>
+    </marker>
+    <!-- Llama a GameManager -->
+    <marker id="aGM" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L8,3.5 L0,7 Z" fill="#4070c0"/>
+    </marker>
+    <!-- Dispara GameEvents -->
+    <marker id="aFire" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L8,3.5 L0,7 Z" fill="#e05555"/>
+    </marker>
+    <!-- Escucha GameEvents -->
+    <marker id="aListen" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L8,3.5 L0,7 Z" fill="#3bbf78"/>
+    </marker>
+    <!-- ScriptableObject asignado -->
+    <marker id="aSO" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L8,3.5 L0,7 Z" fill="#e0a020"/>
+    </marker>
+    <!-- Instancia / Usa -->
+    <marker id="aUse" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L8,3.5 L0,7 Z" fill="#506070"/>
+    </marker>
+  </defs>
+
+  <!-- Fondo -->
+  <rect x="0" y="0" width="1500" height="960" fill="url(#bg)"/>
+
+  <!-- Titulo -->
+  <text x="750" y="14" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="14" font-weight="700" fill="#1e2d45">
+    Mapa de relaciones entre scripts — EMGauntlet
+  </text>
+
+  <!-- ============================================================ -->
+  <!-- ZONAS                                                         -->
+  <!-- ============================================================ -->
+
+  <!-- Z1: ScriptableObjects (franja superior completa) -->
+  <rect x="10" y="20" width="1480" height="116" rx="10" ry="10"
+        fill="#edfcf4" stroke="#3bbf78" stroke-width="1.5"/>
+  <text x="22" y="37" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#2a7a40">ScriptableObjects</text>
+
+  <!-- Z2: Personajes -->
+  <rect x="10" y="148" width="262" height="422" rx="10" ry="10"
+        fill="#ffe8e8" stroke="#e05555" stroke-width="1.5"/>
+  <text x="22" y="165" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#a02020">Personajes</text>
+
+  <!-- Z3: Sistema Central -->
+  <rect x="282" y="148" width="646" height="422" rx="10" ry="10"
+        fill="#e0ecff" stroke="#4070c0" stroke-width="1.5"/>
+  <text x="294" y="165" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#2050a0">Sistema Central</text>
+
+  <!-- Z4: Interfaz de Usuario -->
+  <rect x="938" y="148" width="552" height="422" rx="10" ry="10"
+        fill="#f0e8ff" stroke="#7040c0" stroke-width="1.5"/>
+  <text x="950" y="165" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#4020a0">Interfaz de Usuario</text>
+
+  <!-- Z5: Generacion de Nivel -->
+  <rect x="10" y="582" width="358" height="185" rx="10" ry="10"
+        fill="#e4f5e4" stroke="#408040" stroke-width="1.5"/>
+  <text x="22" y="599" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#205020">Generacion de Nivel</text>
+
+  <!-- Z6: Items e Interactivos -->
+  <rect x="378" y="582" width="538" height="185" rx="10" ry="10"
+        fill="#fff7db" stroke="#e0a020" stroke-width="1.5"/>
+  <text x="390" y="599" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#806010">Items e Interactivos</text>
+
+  <!-- Z7: Leyenda -->
+  <rect x="926" y="582" width="564" height="185" rx="10" ry="10"
+        fill="#ffffff" fill-opacity="0.88" stroke="#c0cce0" stroke-width="1.2"/>
+  <text x="938" y="600" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">Leyenda</text>
+
+  <!-- ============================================================ -->
+  <!-- Z1 NODOS: ScriptableObjects                                   -->
+  <!-- ============================================================ -->
+
+  <!-- CharacterStats [abstract] -->
+  <rect x="20" y="42" width="140" height="40" rx="6" ry="6"
+        fill="#b8f0d8" stroke="#3bbf78" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="90" y="59" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e4a30">CharacterStats</text>
+  <text x="90" y="74" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3a7a50">[abstract · SO]</text>
+
+  <!-- PlayerStats -->
+  <rect x="185" y="32" width="108" height="36" rx="6" ry="6"
+        fill="#c8f5e4" stroke="#3bbf78" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="239" y="48" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e4a30">PlayerStats</text>
+  <text x="239" y="62" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3a7a50">SO</text>
+
+  <!-- EnemyStats [abstract] -->
+  <rect x="185" y="80" width="108" height="36" rx="6" ry="6"
+        fill="#b8f0d8" stroke="#3bbf78" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="239" y="96" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e4a30">EnemyStats</text>
+  <text x="239" y="110" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3a7a50">[abstract · SO]</text>
+
+  <!-- ChaseEnemyStats -->
+  <rect x="314" y="54" width="150" height="36" rx="6" ry="6"
+        fill="#c8f5e4" stroke="#3bbf78" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="389" y="69" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e4a30">ChaseEnemyStats</text>
+  <text x="389" y="83" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3a7a50">dragon · SO</text>
+
+  <!-- LemniscateEnemyStats -->
+  <rect x="480" y="54" width="182" height="36" rx="6" ry="6"
+        fill="#c8f5e4" stroke="#3bbf78" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="571" y="69" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e4a30">LemniscateEnemyStats</text>
+  <text x="571" y="83" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3a7a50">cabra · SO</text>
+
+  <!-- MapConfig -->
+  <rect x="724" y="34" width="128" height="60" rx="6" ry="6"
+        fill="#c8f5e4" stroke="#3bbf78" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="788" y="54" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e4a30">MapConfig</text>
+  <text x="788" y="70" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3a7a50">SO · EnemyDropConfig</text>
+  <text x="788" y="85" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3a7a50">RingConfig x6</text>
+
+  <!-- ============================================================ -->
+  <!-- Z2 NODOS: Personajes                                          -->
+  <!-- ============================================================ -->
+
+  <!-- CharController [abstract] -->
+  <rect x="20" y="176" width="242" height="40" rx="6" ry="6"
+        fill="#ffc0c0" stroke="#e05555" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="141" y="193" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#5a0000">CharController</text>
+  <text x="141" y="207" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#a02020">[abstract MB]</text>
+
+  <!-- PlayerController -->
+  <rect x="20" y="238" width="242" height="40" rx="6" ry="6"
+        fill="#ffd8d8" stroke="#e05555" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="141" y="255" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#5a0000">PlayerController</text>
+  <text x="141" y="269" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#a02020">MB · GO Player</text>
+
+  <!-- EnemyController [abstract] -->
+  <rect x="20" y="300" width="242" height="40" rx="6" ry="6"
+        fill="#ffc0c0" stroke="#e05555" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="141" y="317" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#5a0000">EnemyController</text>
+  <text x="141" y="331" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#a02020">[abstract MB]</text>
+
+  <!-- EnemyChaseController -->
+  <rect x="20" y="362" width="242" height="40" rx="6" ry="6"
+        fill="#ffd8d8" stroke="#e05555" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="141" y="379" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#5a0000">EnemyChaseController</text>
+  <text x="141" y="393" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#a02020">MB · prefab dragon</text>
+
+  <!-- EnemyLemniscateController -->
+  <rect x="20" y="424" width="242" height="40" rx="6" ry="6"
+        fill="#ffd8d8" stroke="#e05555" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="141" y="441" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#5a0000">EnemyLemniscateController</text>
+  <text x="141" y="455" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#a02020">MB · prefab cabra</text>
+
+  <!-- ============================================================ -->
+  <!-- Z3 NODOS: Sistema Central                                     -->
+  <!-- ============================================================ -->
+
+  <!-- GameManager (grande, prominente) -->
+  <rect x="295" y="175" width="230" height="85" rx="8" ry="8"
+        fill="#b8d4f8" stroke="#4070c0" stroke-width="2" filter="url(#sh)"/>
+  <text x="410" y="205" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="13" font-weight="700" fill="#1e2d45">GameManager</text>
+  <text x="410" y="222" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3050a0">Singleton · DontDestroyOnLoad</text>
+  <text x="410" y="237" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3050a0">TryAddKey · TryOpenDoor · StartGame...</text>
+
+  <!-- GameEvents (grande, prominente) -->
+  <rect x="548" y="175" width="210" height="85" rx="8" ry="8"
+        fill="#c8e8ff" stroke="#4070c0" stroke-width="2" filter="url(#sh)"/>
+  <text x="653" y="205" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="13" font-weight="700" fill="#1e2d45">GameEvents</text>
+  <text x="653" y="222" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3050a0">Bus de eventos estatico</text>
+  <text x="653" y="237" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3050a0">OnHealth · OnKeys · OnPlayer...</text>
+
+  <!-- UniqueEntity -->
+  <rect x="350" y="295" width="195" height="40" rx="6" ry="6"
+        fill="#c8d8f8" stroke="#4070c0" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="448" y="312" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">UniqueEntity</text>
+  <text x="448" y="326" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3050a0">MB · GUID · EntityType</text>
+
+  <!-- PlayerGameState -->
+  <rect x="565" y="295" width="170" height="40" rx="6" ry="6"
+        fill="#c8d8f8" stroke="#4070c0" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="650" y="312" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">PlayerGameState</text>
+  <text x="650" y="326" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3050a0">Keys · Diamonds · serial.</text>
+          <!-- ============================================================ -->
+  <!-- Z4 NODOS: Interfaz de Usuario                                 -->
+  <!-- ============================================================ -->
+
+  <!-- CameraController -->
+  <rect x="950" y="180" width="198" height="40" rx="6" ry="6"
+        fill="#e8d8ff" stroke="#7040c0" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="1049" y="197" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#2a0060">CameraController</text>
+  <text x="1049" y="211" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#5030a0">MB · Main Camera</text>
+
+  <!-- HeadUpDisplayController -->
+  <rect x="950" y="240" width="198" height="40" rx="6" ry="6"
+        fill="#e8d8ff" stroke="#7040c0" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="1049" y="257" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-weight="700" fill="#2a0060">HeadUpDisplayController</text>
+  <text x="1049" y="271" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#5030a0">MB · Canvas HUD</text>
+
+  <!-- MainMenuButtonsHandler -->
+  <rect x="950" y="318" width="198" height="40" rx="6" ry="6"
+        fill="#e8d8ff" stroke="#7040c0" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="1049" y="335" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-weight="700" fill="#2a0060">MainMenuButtonsHandler</text>
+  <text x="1049" y="349" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#5030a0">MB · Canvas MainMenu</text>
+
+  <!-- CharSelectionMenuButtonsHandler -->
+  <rect x="950" y="378" width="198" height="40" rx="6" ry="6"
+        fill="#e8d8ff" stroke="#7040c0" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="1049" y="395" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9.5" font-weight="700" fill="#2a0060">CharSelectionButtons</text>
+  <text x="1049" y="409" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#5030a0">MB · Canvas CharSelection</text>
+
+  <!-- GameOverCanvasHandler -->
+  <rect x="950" y="438" width="198" height="40" rx="6" ry="6"
+        fill="#e8d8ff" stroke="#7040c0" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="1049" y="455" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" font-weight="700" fill="#2a0060">GameOverCanvasHandler</text>
+  <text x="1049" y="469" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#5030a0">MB · Victory/Dead Canvas</text>
+
+  <!-- ============================================================ -->
+  <!-- Z5 NODOS: Generacion de Nivel                                 -->
+  <!-- ============================================================ -->
+
+  <!-- LevelGenerator -->
+  <rect x="20" y="610" width="160" height="40" rx="6" ry="6"
+        fill="#b8e8b8" stroke="#408040" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="100" y="627" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#143014">LevelGenerator</text>
+  <text x="100" y="641" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#306030">MB · PlayGroundLevel</text>
+
+  <!-- TilemapFiller -->
+  <rect x="198" y="610" width="155" height="40" rx="6" ry="6"
+        fill="#b8e8b8" stroke="#408040" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="276" y="627" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#143014">TilemapFiller</text>
+  <text x="276" y="641" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#306030">MB · ref de LevelGenerator</text>
+
+  <!-- ============================================================ -->
+  <!-- Z6 NODOS: Items e Interactivos                                -->
+  <!-- ============================================================ -->
+
+  <!-- EnemySpawner -->
+  <rect x="388" y="605" width="134" height="40" rx="6" ry="6"
+        fill="#f5e8b0" stroke="#e0a020" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="455" y="622" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#4a3000">EnemySpawner</text>
+  <text x="455" y="636" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#806010">MB · prefab</text>
+
+  <!-- KeyCollection -->
+  <rect x="540" y="605" width="128" height="40" rx="6" ry="6"
+        fill="#f5e8b0" stroke="#e0a020" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="604" y="622" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#4a3000">KeyCollection</text>
+  <text x="604" y="636" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#806010">MB · drop llave</text>
+
+  <!-- DiamondCollection -->
+  <rect x="686" y="605" width="152" height="40" rx="6" ry="6"
+        fill="#f5e8b0" stroke="#e0a020" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="762" y="622" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#4a3000">DiamondCollection</text>
+  <text x="762" y="636" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#806010">MB · drop diamante</text>
+
+  <!-- DoorController -->
+  <rect x="388" y="668" width="134" height="40" rx="6" ry="6"
+        fill="#f5e8b0" stroke="#e0a020" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="455" y="685" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#4a3000">DoorController</text>
+  <text x="455" y="699" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#806010">MB · prefab puerta</text>
+
+  <!-- ChestController -->
+  <rect x="540" y="668" width="134" height="40" rx="6" ry="6"
+        fill="#f5e8b0" stroke="#e0a020" stroke-width="1.2" filter="url(#sh)"/>
+  <text x="607" y="685" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#4a3000">ChestController</text>
+  <text x="607" y="699" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#806010">MB · cofre tesoro</text>
+
+  <!-- ============================================================ -->
+  <!-- LEYENDA (Z7)                                                  -->
+  <!-- ============================================================ -->
+
+  <line x1="942" y1="620" x2="975" y2="620"
+        stroke="#8090a8" stroke-width="2" stroke-dasharray="5 3"/>
+  <path d="M972,616 L980,620 L972,624 Z" fill="#8090a8"/>
+  <text x="986" y="624" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Herencia de clase</text>
+
+  <line x1="942" y1="644" x2="975" y2="644"
+        stroke="#4070c0" stroke-width="2"/>
+  <path d="M972,640 L980,644 L972,648 Z" fill="#4070c0"/>
+  <text x="986" y="648" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Llama a GameManager</text>
+
+  <line x1="942" y1="668" x2="975" y2="668"
+        stroke="#e05555" stroke-width="2"/>
+  <path d="M972,664 L980,668 L972,672 Z" fill="#e05555"/>
+  <text x="986" y="672" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Dispara GameEvents</text>
+
+  <line x1="942" y1="692" x2="975" y2="692"
+        stroke="#3bbf78" stroke-width="2"/>
+  <path d="M972,688 L980,692 L972,696 Z" fill="#3bbf78"/>
+  <text x="986" y="696" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Escucha GameEvents</text>
+
+  <line x1="942" y1="716" x2="975" y2="716"
+        stroke="#e0a020" stroke-width="2" stroke-dasharray="5 3"/>
+  <path d="M972,712 L980,716 L972,720 Z" fill="#e0a020"/>
+  <text x="986" y="720" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">ScriptableObject asignado</text>
+
+  <line x1="942" y1="740" x2="975" y2="740"
+        stroke="#506070" stroke-width="2"/>
+  <path d="M972,736 L980,740 L972,744 Z" fill="#506070"/>
+  <text x="986" y="744" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Instancia / Usa</text>
+
+  <!-- ============================================================ -->
+  <!-- FLECHAS: Herencia (gris punteado)                             -->
+  <!-- ============================================================ -->
+
+  <!-- CharacterStats → PlayerStats -->
+  <path d="M160,60 L185,48"
+        stroke="#8090a8" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aI)"/>
+
+  <!-- CharacterStats → EnemyStats -->
+  <path d="M160,66 L185,92"
+        stroke="#8090a8" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aI)"/>
+
+  <!-- EnemyStats → ChaseEnemyStats -->
+  <path d="M293,92 L314,70"
+        stroke="#8090a8" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aI)"/>
+
+  <!-- EnemyStats → LemniscateEnemyStats -->
+  <path d="M293,96 C380,96 430,72 480,72"
+        stroke="#8090a8" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aI)"/>
+
+  <!-- CharController → PlayerController (rama izquierda) -->
+  <path d="M118,216 L118,238"
+        stroke="#8090a8" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aI)"/>
+
+  <!-- CharController → EnemyController (rama derecha) -->
+  <path d="M164,216 L164,300"
+        stroke="#8090a8" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aI)"/>
+
+  <!-- EnemyController → EnemyChaseController (rama izquierda) -->
+  <path d="M118,340 L118,362"
+        stroke="#8090a8" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aI)"/>
+
+  <!-- EnemyController → EnemyLemniscateController (rama derecha) -->
+  <path d="M164,340 L164,424"
+        stroke="#8090a8" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aI)"/>
+
+  <!-- ============================================================ -->
+  <!-- FLECHAS: Llama a GameManager (azul solido)                   -->
+  <!-- ============================================================ -->
+
+  <!-- PlayerController → GameManager -->
+  <path d="M262,255 C280,255 280,222 295,222"
+        stroke="#4070c0" stroke-width="2" fill="none"
+        marker-end="url(#aGM)"/>
+
+  <!-- EnemyController → GameManager -->
+  <path d="M262,318 C280,318 280,238 295,238"
+        stroke="#4070c0" stroke-width="2" fill="none"
+        marker-end="url(#aGM)"/>
+
+  <!-- LevelGenerator → GameManager -->
+  <path d="M130,610 C130,490 295,440 295,260"
+        stroke="#4070c0" stroke-width="2" fill="none"
+        marker-end="url(#aGM)"/>
+  <text x="168" y="518" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#4070c0" font-weight="600">SelectedMapConfig</text>
+
+  <!-- Items group → GameManager (desde KeyCollection) -->
+  <path d="M604,605 C604,490 525,420 525,260"
+        stroke="#4070c0" stroke-width="2" fill="none"
+        marker-end="url(#aGM)"/>
+  <text x="548" y="480" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#4070c0" font-weight="600">TryAdd/Open/Victory</text>
+
+  <!-- MainMenuButtonsHandler → GameManager -->
+  <path d="M950,335 C840,335 640,270 525,232"
+        stroke="#4070c0" stroke-width="2" fill="none"
+        marker-end="url(#aGM)"/>
+
+  <!-- CharSelectionMenuButtonsHandler → GameManager -->
+  <path d="M950,393 C840,393 640,285 525,242"
+        stroke="#4070c0" stroke-width="2" fill="none"
+        marker-end="url(#aGM)"/>
+  <text x="768" y="310" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#4070c0" font-weight="600">StartGame(stats)</text>
+
+  <!-- HeadUpDisplayController → GameManager (lee datos) -->
+  <path d="M950,255 C860,255 700,245 525,245"
+        stroke="#4070c0" stroke-width="1.6" fill="none"
+        stroke-dasharray="8 3" marker-end="url(#aGM)"/>
+          <!-- ============================================================ -->
+  <!-- FLECHAS: Dispara GameEvents (rojo solido)                     -->
+  <!-- ============================================================ -->
+
+  <!-- PlayerController → GameEvents (fires HealthChanged, PlayerDied) -->
+  <path d="M262,252 C400,252 500,215 548,215"
+        stroke="#e05555" stroke-width="2" fill="none"
+        marker-end="url(#aFire)"/>
+  <text x="390" y="244" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#e05555" font-weight="600">HealthChanged · PlayerDied</text>
+
+  <!-- GameManager → GameEvents (fires OnLocalPlayerRegistered) -->
+  <path d="M525,215 L548,215"
+        stroke="#e05555" stroke-width="2" fill="none"
+        marker-end="url(#aFire)"/>
+  <text x="532" y="209" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8" fill="#e05555">OnLocalPlayer...</text>
+
+  <!-- PlayerGameState → GameEvents (fires OnKeysChanged, OnDiamondsChanged) -->
+  <path d="M650,295 L653,260"
+        stroke="#e05555" stroke-width="1.6" fill="none"
+        marker-end="url(#aFire)"/>
+
+  <!-- ============================================================ -->
+  <!-- FLECHAS: Escucha GameEvents (verde solido)                    -->
+  <!-- ============================================================ -->
+
+  <!-- GameEvents → CameraController (OnLocalPlayerRegistered) -->
+  <path d="M758,212 C840,208 900,198 950,200"
+        stroke="#3bbf78" stroke-width="2" fill="none"
+        marker-end="url(#aListen)"/>
+  <text x="848" y="198" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3bbf78" font-weight="600">OnLocalPlayerRegistered</text>
+
+  <!-- GameEvents → HeadUpDisplayController (OnHealth, OnKeys, OnDiamonds) -->
+  <path d="M758,224 C840,238 900,256 950,258"
+        stroke="#3bbf78" stroke-width="2" fill="none"
+        marker-end="url(#aListen)"/>
+  <text x="845" y="252" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3bbf78" font-weight="600">OnHealth/Keys/Diamonds</text>
+
+  <!-- GameEvents → EnemyChaseController (OnLocalPlayerRegistered) -->
+  <path d="M548,228 C430,228 350,372 262,382"
+        stroke="#3bbf78" stroke-width="2" fill="none"
+        marker-end="url(#aListen)"/>
+  <text x="365" y="288" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3bbf78" font-weight="600">OnLocalPlayer...</text>
+
+  <!-- GameEvents → LevelGenerator (OnLocalPlayerRegistered) -->
+  <path d="M653,260 C653,448 100,448 100,610"
+        stroke="#3bbf78" stroke-width="2" fill="none"
+        marker-end="url(#aListen)"/>
+  <text x="318" y="444" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#3bbf78" font-weight="600">OnLocalPlayerRegistered</text>
+
+  <!-- ============================================================ -->
+  <!-- FLECHAS: ScriptableObject asignado (naranja punteado)         -->
+  <!-- ============================================================ -->
+
+  <!-- PlayerStats → CharSelectionMenuButtonsHandler -->
+  <path d="M293,50 C700,50 900,362 950,393"
+        stroke="#e0a020" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aSO)"/>
+  <text x="648" y="44" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#e0a020" font-weight="600">playerStats (Inspector)</text>
+
+  <!-- MapConfig → MainMenuButtonsHandler -->
+  <path d="M852,62 C952,62 992,268 950,333"
+        stroke="#e0a020" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aSO)"/>
+  <text x="962" y="178" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#e0a020" font-weight="600">availableMaps[]</text>
+
+  <!-- ChaseEnemyStats → EnemyChaseController -->
+  <path d="M389,90 C389,172 141,262 141,362"
+        stroke="#e0a020" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aSO)"/>
+  <text x="228" y="200" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#e0a020" font-weight="600">stats (prefab)</text>
+
+  <!-- LemniscateEnemyStats → EnemyLemniscateController -->
+  <path d="M571,90 C571,185 162,315 162,424"
+        stroke="#e0a020" stroke-width="1.8" fill="none"
+        stroke-dasharray="5 3" marker-end="url(#aSO)"/>
+
+  <!-- ============================================================ -->
+  <!-- FLECHAS: Instancia / Usa (gris oscuro solido)                 -->
+  <!-- ============================================================ -->
+
+  <!-- LevelGenerator → TilemapFiller (usa) -->
+  <path d="M180,630 L198,630"
+        stroke="#506070" stroke-width="2" fill="none"
+        marker-end="url(#aUse)"/>
+
+  <!-- TilemapFiller → EnemySpawner (instancia en rings) -->
+  <path d="M353,628 C368,625 378,622 388,622"
+        stroke="#506070" stroke-width="2" fill="none"
+        marker-end="url(#aUse)"/>
+  <text x="278" y="660" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#506070" font-weight="600">spawnSpawnersInRing</text>
+
+  <!-- EnemyController → drops (KeyCollection, DiamondCollection) -->
+  <path d="M262,315 C500,350 762,500 762,605"
+        stroke="#506070" stroke-width="2" fill="none"
+        marker-end="url(#aUse)"/>
+  <text x="522" y="438" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#506070" font-weight="600">spawnDrops()</text>
+
+</svg>

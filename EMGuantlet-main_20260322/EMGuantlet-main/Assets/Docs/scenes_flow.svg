@@ -1,0 +1,194 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0f4ff"/>
+      <stop offset="100%" stop-color="#edfcf4"/>
+    </linearGradient>
+
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#2f3b52" flood-opacity="0.15"/>
+    </filter>
+
+    <marker id="arrowFwd" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2f3b52"/>
+    </marker>
+
+    <marker id="arrowBack" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#5b6a89"/>
+    </marker>
+  </defs>
+
+  <!-- Fondo -->
+  <rect x="0" y="0" width="1200" height="520" fill="url(#bgGrad)"/>
+
+  <!-- Título -->
+  <text x="600" y="44" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="20" font-weight="700" fill="#1f2a44">
+    Flujo de escenas — EMGauntlet
+  </text>
+  <line x1="200" y1="54" x2="1000" y2="54" stroke="#c5cfe0" stroke-width="1.5"/>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- NODOS                                  -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- MainMenu -->
+  <rect x="30" y="210" width="185" height="90" rx="12" ry="12"
+        fill="#e9f0ff" stroke="#2f3b52" stroke-width="2"
+        filter="url(#shadow)"/>
+  <rect x="30" y="210" width="185" height="8" rx="12" ry="12"
+        fill="#6b8adf"/>
+  <rect x="30" y="214" width="185" height="4"
+        fill="#6b8adf"/>
+  <text x="122" y="248" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="15" font-weight="700" fill="#1f2a44">MainMenu</text>
+  <text x="122" y="268" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" fill="#425277">Inicio · Mapa · Salir</text>
+
+  <!-- CharSelectionScene -->
+  <rect x="285" y="210" width="220" height="90" rx="12" ry="12"
+        fill="#f3ecff" stroke="#2f3b52" stroke-width="2"
+        filter="url(#shadow)"/>
+  <rect x="285" y="210" width="220" height="8" rx="12" ry="12"
+        fill="#9b6bdf"/>
+  <rect x="285" y="214" width="220" height="4"
+        fill="#9b6bdf"/>
+  <text x="395" y="248" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="14" font-weight="700" fill="#1f2a44">CharSelectionScene</text>
+  <text x="395" y="268" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" fill="#425277">Elegir personaje</text>
+
+  <!-- PlayGroundLevel -->
+  <rect x="570" y="210" width="220" height="90" rx="12" ry="12"
+        fill="#e8fff3" stroke="#2f3b52" stroke-width="2"
+        filter="url(#shadow)"/>
+  <rect x="570" y="210" width="220" height="8" rx="12" ry="12"
+        fill="#3bbf78"/>
+  <rect x="570" y="214" width="220" height="4"
+        fill="#3bbf78"/>
+  <text x="680" y="248" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="14" font-weight="700" fill="#1f2a44">PlayGroundLevel</text>
+  <text x="680" y="268" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" fill="#425277">Partida principal</text>
+
+  <!-- VictoryScene -->
+  <rect x="885" y="78" width="200" height="90" rx="12" ry="12"
+        fill="#fff7db" stroke="#2f3b52" stroke-width="2"
+        filter="url(#shadow)"/>
+  <rect x="885" y="78" width="200" height="8" rx="12" ry="12"
+        fill="#f0b429"/>
+  <rect x="885" y="82" width="200" height="4"
+        fill="#f0b429"/>
+  <text x="985" y="116" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="14" font-weight="700" fill="#1f2a44">VictoryScene</text>
+  <text x="985" y="136" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" fill="#425277">Cofre alcanzado</text>
+
+  <!-- DeadScene -->
+  <rect x="885" y="342" width="200" height="90" rx="12" ry="12"
+        fill="#ffe7e7" stroke="#2f3b52" stroke-width="2"
+        filter="url(#shadow)"/>
+  <rect x="885" y="342" width="200" height="8" rx="12" ry="12"
+        fill="#e05555"/>
+  <rect x="885" y="346" width="200" height="4"
+        fill="#e05555"/>
+  <text x="985" y="380" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="14" font-weight="700" fill="#1f2a44">DeadScene</text>
+  <text x="985" y="400" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" fill="#425277">Vida agotada</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FLUJOS PRINCIPALES                     -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- MainMenu → CharSelection -->
+  <path d="M215 252 L283 252"
+        stroke="#2f3b52" stroke-width="2.3" fill="none"
+        marker-end="url(#arrowFwd)"/>
+  <text x="249" y="241" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#2f3b52">Jugar</text>
+
+  <!-- CharSelection → PlayGround -->
+  <path d="M505 252 L568 252"
+        stroke="#2f3b52" stroke-width="2.3" fill="none"
+        marker-end="url(#arrowFwd)"/>
+  <text x="537" y="241" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#2f3b52">Personaje elegido</text>
+
+  <!-- PlayGround → Victory -->
+  <path d="M790 236 C840 208, 858 165, 883 138"
+        stroke="#2f3b52" stroke-width="2.3" fill="none"
+        marker-end="url(#arrowFwd)"/>
+  <text x="848" y="176" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#2f3b52">Victoria</text>
+
+  <!-- PlayGround → Dead -->
+  <path d="M790 274 C840 305, 858 352, 883 372"
+        stroke="#2f3b52" stroke-width="2.3" fill="none"
+        marker-end="url(#arrowFwd)"/>
+  <text x="848" y="340" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#2f3b52">Derrota</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FLUJOS DE VUELTA (punteados)           -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- CharSelection → MainMenu -->
+  <path d="M395 210 C395 152, 122 152, 122 210"
+        stroke="#5b6a89" stroke-width="2" fill="none"
+        stroke-dasharray="6 4"
+        marker-end="url(#arrowBack)"/>
+  <text x="258" y="142" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#5b6a89">Volver</text>
+
+  <!-- Victory → MainMenu -->
+  <path d="M885 108 C810 30, 250 30, 122 210"
+        stroke="#5b6a89" stroke-width="2" fill="none"
+        stroke-dasharray="6 4"
+        marker-end="url(#arrowBack)"/>
+  <text x="500" y="20" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#5b6a89">Volver al menú</text>
+
+  <!-- Dead → MainMenu -->
+  <path d="M885 372 C810 462, 250 462, 122 300"
+        stroke="#5b6a89" stroke-width="2" fill="none"
+        stroke-dasharray="6 4"
+        marker-end="url(#arrowBack)"/>
+  <text x="500" y="476" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#5b6a89">Volver al menú</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- LEYENDA                                -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <rect x="30" y="468" width="260" height="44" rx="8" ry="8"
+        fill="#ffffff" fill-opacity="0.75" stroke="#c5cfe0" stroke-width="1.2"/>
+  <line x1="48" y1="484" x2="78" y2="484"
+        stroke="#2f3b52" stroke-width="2.3"/>
+  <path d="M74,480 L84,484 L74,488 Z" fill="#2f3b52"/>
+  <text x="92" y="488" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" fill="#2f3b52" font-weight="600">Flujo principal</text>
+  <line x1="48" y1="503" x2="78" y2="503"
+        stroke="#5b6a89" stroke-width="2" stroke-dasharray="5 3"/>
+  <path d="M74,499 L84,503 L74,507 Z" fill="#5b6a89"/>
+  <text x="92" y="507" font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" fill="#5b6a89" font-weight="600">Volver al menú</text>
+</svg>

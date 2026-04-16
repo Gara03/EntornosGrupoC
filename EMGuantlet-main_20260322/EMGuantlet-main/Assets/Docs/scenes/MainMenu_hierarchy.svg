@@ -1,0 +1,240 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="375" viewBox="0 0 1220 375">
+  <defs>
+    <filter id="sh" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1e2d45" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4f6fb"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1220" height="375" fill="url(#bg)"/>
+
+  <text x="610" y="16" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="16" font-weight="700" fill="#1e2d45">
+    Jerarquia de la escena: MainMenu
+  </text>
+
+  <!-- ROOT -->
+  <rect x="460" y="24" width="280" height="50" rx="10" ry="10"
+        fill="#1e2d45" filter="url(#sh)"/>
+  <text x="600" y="47" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="15" font-weight="700" fill="#ffffff">MainMenu</text>
+  <text x="600" y="64" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#7090c0">Scene Root</text>
+
+  <!-- ROOT to trunk -->
+  <line x1="600" y1="74" x2="600" y2="94" stroke="#8090a8" stroke-width="1.8"/>
+
+  <!-- HORIZONTAL TRUNK LEVEL 1 -->
+  <line x1="80" y1="94" x2="950" y2="94" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="80"  y1="94" x2="80"  y2="98" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="220" y1="94" x2="220" y2="98" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="360" y1="94" x2="360" y2="98" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="500" y1="94" x2="500" y2="98" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="620" y1="94" x2="620" y2="98" stroke="#8090a8" stroke-width="1.8"/>
+  <line x1="950" y1="94" x2="950" y2="98" stroke="#8090a8" stroke-width="1.8"/>
+
+  <!-- NIVEL 1: Main Camera -->
+  <rect x="15" y="98" width="130" height="60" rx="8" ry="8"
+        fill="#f0f2f8" stroke="#7080a0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="15" y="98" width="130" height="5" rx="8" ry="8" fill="#6078a0"/>
+  <rect x="15" y="101" width="130" height="2" fill="#6078a0"/>
+  <text x="80" y="120" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Main Camera</text>
+  <text x="80" y="138" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#5070a0">Camera</text>
+
+  <!-- NIVEL 1: Directional Light -->
+  <rect x="155" y="98" width="130" height="60" rx="8" ry="8"
+        fill="#f0f2f8" stroke="#7080a0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="155" y="98" width="130" height="5" rx="8" ry="8" fill="#6078a0"/>
+  <rect x="155" y="101" width="130" height="2" fill="#6078a0"/>
+  <text x="220" y="120" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Directional Light</text>
+  <text x="220" y="138" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#5070a0">Light</text>
+
+  <!-- NIVEL 1: EventSystem -->
+  <rect x="295" y="98" width="130" height="60" rx="8" ry="8"
+        fill="#f0f2f8" stroke="#7080a0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="295" y="98" width="130" height="5" rx="8" ry="8" fill="#6078a0"/>
+  <rect x="295" y="101" width="130" height="2" fill="#6078a0"/>
+  <text x="360" y="120" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">EventSystem</text>
+  <text x="360" y="138" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#5070a0">EventSystem</text>
+
+  <!-- NIVEL 1: GameManager -->
+  <rect x="435" y="98" width="130" height="60" rx="8" ry="8"
+        fill="#e0ecff" stroke="#4070c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="435" y="98" width="130" height="5" rx="8" ry="8" fill="#4070c0"/>
+  <rect x="435" y="101" width="130" height="2" fill="#4070c0"/>
+  <text x="500" y="116" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">GameManager</text>
+  <text x="500" y="131" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="9" fill="#3060a0">GameManager.cs</text>
+  <text x="500" y="147" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8" fill="#5080c0">DontDestroyOnLoad</text>
+
+  <!-- NIVEL 1: Grid -->
+  <rect x="555" y="98" width="130" height="60" rx="8" ry="8"
+        fill="#e4f5e4" stroke="#50a050" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="555" y="98" width="130" height="5" rx="8" ry="8" fill="#408040"/>
+  <rect x="555" y="101" width="130" height="2" fill="#408040"/>
+  <text x="620" y="120" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Grid</text>
+  <text x="620" y="138" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a703a">Grid Component</text>
+
+  <!-- NIVEL 1: Canvas -->
+  <rect x="885" y="98" width="130" height="60" rx="8" ry="8"
+        fill="#ede0ff" stroke="#7040c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="885" y="98" width="130" height="5" rx="8" ry="8" fill="#7040c0"/>
+  <rect x="885" y="101" width="130" height="2" fill="#7040c0"/>
+  <text x="950" y="116" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Canvas</text>
+  <text x="950" y="131" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">MainMenuButtons</text>
+  <text x="950" y="145" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">Handler.cs</text>
+
+  <!-- Grid → Tilemap (linea recta) -->
+  <line x1="620" y1="158" x2="620" y2="204" stroke="#408040" stroke-width="1.8"/>
+
+  <!-- Canvas → trunk nivel 2 -->
+  <line x1="950" y1="158" x2="950" y2="200" stroke="#7040c0" stroke-width="1.8"/>
+
+  <!-- HORIZONTAL TRUNK NIVEL 2 (Canvas children) -->
+  <line x1="770" y1="200" x2="1130" y2="200" stroke="#7040c0" stroke-width="1.8"/>
+  <line x1="770"  y1="200" x2="770"  y2="204" stroke="#7040c0" stroke-width="1.8"/>
+  <line x1="890"  y1="200" x2="890"  y2="204" stroke="#7040c0" stroke-width="1.8"/>
+  <line x1="1010" y1="200" x2="1010" y2="204" stroke="#7040c0" stroke-width="1.8"/>
+  <line x1="1130" y1="200" x2="1130" y2="204" stroke="#7040c0" stroke-width="1.8"/>
+
+  <!-- NIVEL 2: Tilemap -->
+  <rect x="555" y="204" width="130" height="60" rx="8" ry="8"
+        fill="#d8f0d8" stroke="#3da03d" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="555" y="204" width="130" height="5" rx="8" ry="8" fill="#3da03d"/>
+  <rect x="555" y="207" width="130" height="2" fill="#3da03d"/>
+  <text x="620" y="226" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">Tilemap</text>
+  <text x="620" y="244" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#2a7a2a">Fondo decorativo</text>
+
+  <!-- NIVEL 2: ButtonPlay -->
+  <rect x="705" y="204" width="130" height="60" rx="8" ry="8"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="705" y="204" width="130" height="5" rx="8" ry="8" fill="#9060c0"/>
+  <rect x="705" y="207" width="130" height="2" fill="#9060c0"/>
+  <text x="770" y="222" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">ButtonPlay</text>
+  <text x="770" y="237" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">OnButtonPlay</text>
+  <text x="770" y="251" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">Clicked()</text>
+
+  <!-- NIVEL 2: ButtonOptions -->
+  <rect x="825" y="204" width="130" height="60" rx="8" ry="8"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="825" y="204" width="130" height="5" rx="8" ry="8" fill="#9060c0"/>
+  <rect x="825" y="207" width="130" height="2" fill="#9060c0"/>
+  <text x="890" y="222" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">ButtonOptions</text>
+  <text x="890" y="237" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">OnOptions</text>
+  <text x="890" y="251" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">ButtonClicked()</text>
+
+  <!-- NIVEL 2: ButtonExit -->
+  <rect x="945" y="204" width="130" height="60" rx="8" ry="8"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="945" y="204" width="130" height="5" rx="8" ry="8" fill="#9060c0"/>
+  <rect x="945" y="207" width="130" height="2" fill="#9060c0"/>
+  <text x="1010" y="222" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">ButtonExit</text>
+  <text x="1010" y="237" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">OnExitButton</text>
+  <text x="1010" y="251" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">Clicked()</text>
+
+  <!-- NIVEL 2: MapsDropdown -->
+  <rect x="1065" y="204" width="130" height="60" rx="8" ry="8"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="1065" y="204" width="130" height="5" rx="8" ry="8" fill="#9060c0"/>
+  <rect x="1065" y="207" width="130" height="2" fill="#9060c0"/>
+  <text x="1130" y="222" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="12" font-weight="700" fill="#1e2d45">MapsDropdown</text>
+  <text x="1130" y="237" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">TMP_Dropdown</text>
+  <text x="1130" y="251" text-anchor="middle"
+        font-family="'Segoe UI',Arial,sans-serif"
+        font-size="8.5" fill="#5030a0">MapConfig[ ]</text>
+
+  <!-- LEYENDA -->
+  <rect x="10" y="278" width="620" height="72" rx="8" ry="8"
+        fill="#ffffff" fill-opacity="0.82" stroke="#c0cce0" stroke-width="1.2"/>
+  <text x="25" y="296" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="11" font-weight="700" fill="#1e2d45">Leyenda de tipos</text>
+
+  <rect x="25" y="304" width="12" height="12" rx="3" ry="3"
+        fill="#f0f2f8" stroke="#7080a0" stroke-width="1"/>
+  <text x="42" y="315" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Unity estandar (Camera, Light, EventSystem)</text>
+
+  <rect x="25" y="321" width="12" height="12" rx="3" ry="3"
+        fill="#e0ecff" stroke="#4070c0" stroke-width="1"/>
+  <text x="42" y="332" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Script personalizado</text>
+
+  <rect x="25" y="338" width="12" height="12" rx="3" ry="3"
+        fill="#e4f5e4" stroke="#50a050" stroke-width="1"/>
+  <text x="42" y="349" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Grid / Tilemap</text>
+
+  <rect x="220" y="304" width="12" height="12" rx="3" ry="3"
+        fill="#ede0ff" stroke="#7040c0" stroke-width="1"/>
+  <text x="237" y="315" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Canvas (script adjunto)</text>
+
+  <rect x="220" y="321" width="12" height="12" rx="3" ry="3"
+        fill="#f5edff" stroke="#9060c0" stroke-width="1"/>
+  <text x="237" y="332" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Elemento UI hijo (botones, dropdown)</text>
+
+  <rect x="220" y="338" width="12" height="12" rx="3" ry="3"
+        fill="#d8f0d8" stroke="#3da03d" stroke-width="1"/>
+  <text x="237" y="349" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="10" fill="#3a4a6a">Tilemap hijo</text>
+</svg>
