@@ -7,22 +7,21 @@ public class PlayerController : CharController
     private PlayerControls controls;
     private bool isReadyForMultiplayer = false;
 
-    protected int damageToEnemy;
-    protected float attackCooldown;
-
-    public bool IsAttacking { get; private set; } = false;
-    public int DamageToEnemy => damageToEnemy;
-
-    [Header("Multiplayer Colors")]
-    [SerializeField] private PlayerStats[] allCharacters;
-
-    // Variable compartida
+    // Variable Network
     private NetworkVariable<int> selectedCharacterIndex = new NetworkVariable<int>(
         -1,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Owner
     );
 
+    protected int damageToEnemy;
+    protected float attackCooldown;
+
+    public bool IsAttacking { get; private set; } = false;
+    public int DamageToEnemy => damageToEnemy;
+
+    [Header("Character Colors")]
+    [SerializeField] private PlayerStats[] allCharacters;
 
     /// <summary>
     /// Inicializa controles de entrada y registra el jugador local en el gestor global.
@@ -72,6 +71,9 @@ public class PlayerController : CharController
         }
     }
 
+    /// <summary>
+    /// Desconecta al jugador de la red.
+    /// </summary>
     public override void OnNetworkDespawn()
     {
         if (IsOwner && controls != null)
@@ -82,6 +84,9 @@ public class PlayerController : CharController
         base.OnNetworkDespawn();
     }
 
+    /// <summary>
+    /// Aplica el personaje seleccionado por el jugador.
+    /// </summary>
     private void ApplyVisuals(int index)
     {
         if (index < 0 || index >= allCharacters.Length) return;
@@ -101,6 +106,10 @@ public class PlayerController : CharController
         Invoke(nameof(EnablePhysics), 0.5f);
     }
 
+
+    /// <summary>
+    /// Activa el collider del personaje.
+    /// </summary>
     private void EnablePhysics()
     {
         isReadyForMultiplayer = true;
@@ -108,6 +117,9 @@ public class PlayerController : CharController
         foreach (Collider2D col in colliders) col.enabled = true;
     }
 
+    /// <summary>
+    /// Busca el personaje a seleccionar.
+    /// </summary>
     private int FindCharacterIndex(PlayerStats targetStats)
     {
         if (allCharacters == null) return 0;
@@ -194,7 +206,7 @@ public class PlayerController : CharController
     {
         if (!IsOwner) return;
 
-        // ✅ PRIMERO: Intenta cargar desde GameManager (personaje seleccionado)
+        // PRIMERO: Intenta cargar desde GameManager (personaje seleccionado)
         if (GameManager.Instance != null && GameManager.Instance.SelectedCharacterStats != null)
         {
             stats = GameManager.Instance.SelectedCharacterStats;
@@ -203,7 +215,7 @@ public class PlayerController : CharController
 
         base.LoadStats();
 
-        // ✅ Haz casting del campo heredado
+        // Haz casting del campo heredado
         PlayerStats playerStats = stats as PlayerStats;
 
         if (playerStats != null)
@@ -261,7 +273,7 @@ public class PlayerController : CharController
     }
 
     /// <summary>
-    /// El Servidor recibe la señal de que este jugador ha atacado.
+    /// El Servidor recibe el aviso de que el jugador ha atacado.
     /// </summary>
     [Rpc(SendTo.Server)]
     private void NotifyAttackServerRpc()
@@ -269,6 +281,9 @@ public class PlayerController : CharController
         PlayAttackAnimationRpc();
     }
 
+    /// <summary>
+    /// Todos los clientes y el Host reciben el aviso de que el jugador ha atacado.
+    /// </summary>
     [Rpc(SendTo.Everyone)]
     private void PlayAttackAnimationRpc()
     {

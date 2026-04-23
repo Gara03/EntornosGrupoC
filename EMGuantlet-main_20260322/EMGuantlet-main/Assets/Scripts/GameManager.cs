@@ -5,7 +5,6 @@ public static class SceneNames
 {
     public const string MainMenu = "MainMenu";
     public const string CharSelection = "CharSelectionScene";
-    public const string Lobby = "Lobby";
     public const string PlaygroundLevel = "PlaygroundLevel";
     public const string DeadScene = "DeadScene";
     public const string VictoryScene = "VictoryScene";
@@ -162,10 +161,15 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Reestablece los datos del juego.
+    /// </summary>
     public void PrepareMultiplayerGame()
     {
         ResetGameData();
     }
+
+    ///// METODOS ANTIGUOS (LOCAL) DE START
 
     /// <summary>
     /// Guarda el personaje seleccionado, reinicia datos y carga el nivel de juego.
@@ -193,6 +197,9 @@ public class GameManager : MonoBehaviour
         SelectedMapConfig = selectedMap;
         StartGame(selectedCharacter);
     }*/
+
+
+
 
     /// <summary>
     /// Inicia el flujo de fin de partida por muerte del jugador.

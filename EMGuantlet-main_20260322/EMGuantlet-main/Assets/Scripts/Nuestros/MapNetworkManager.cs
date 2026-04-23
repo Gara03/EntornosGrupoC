@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
+/// <summary>
+/// .
+/// </summary>
 public class MapNetworkManager : NetworkBehaviour
 {
     private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0);
@@ -10,6 +13,10 @@ public class MapNetworkManager : NetworkBehaviour
     public LevelGenerator levelGenerator;
     public GameObject playerPrefab;
 
+    /// <summary>
+    /// Si se trata del Host, genera una semilla de forma aleatoria para generar el mapa y espera a que carguen todos los jugadores
+    /// Si se trata de los clientes, se genera el mapa a partir de la semilla del Host 
+    /// </summary>
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -29,6 +36,9 @@ public class MapNetworkManager : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que se encarga de eliminar los clientes que queden si se finaliza la conexión.
+    /// </summary>
     public override void OnDestroy()
     {
         if (NetworkManager.Singleton != null && NetworkManager.Singleton.SceneManager != null)
@@ -36,6 +46,9 @@ public class MapNetworkManager : NetworkBehaviour
         base.OnDestroy();
     }
 
+    /// <summary>
+    /// Método que se encarga de asegurar que todos los jugadores se han cargado para instanciarlos.
+    /// </summary>
     private void OnAllClientsLoaded(string sceneName, UnityEngine.SceneManagement.LoadSceneMode mode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
         if (IsServer && sceneName == gameObject.scene.name)
@@ -44,6 +57,9 @@ public class MapNetworkManager : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Instancia todos los jugadores en el mapa.
+    /// </summary>
     private void SpawnAllPlayers()
     {
         Vector3 basePos = levelGenerator.GetPlayerSpawnPosition();

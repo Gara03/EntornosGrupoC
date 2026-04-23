@@ -68,11 +68,11 @@ public class LevelGenerator : MonoBehaviour
     /// </summary>
     private void OnDestroy()
     {
-        //GameEvents.OnLocalPlayerRegistered -= onLocalPlayerRegistered;
+        GameEvents.OnLocalPlayerRegistered -= onLocalPlayerRegistered;
     }
 
     /// <summary>
-    /// Inicia la generación del mapa asegurando que la aleatoriedad es idéntica para todos en la red.
+    /// Inicia la generación del mapa asegurando que la semilla es igual para todos en la red.
     /// </summary>
     public void StartGenerationWithSeed(int seed)
     {
@@ -277,34 +277,17 @@ public class LevelGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Calcula y prepara la posición de spawn del jugador para aplicarla al registrarse.
+    /// Calcula y prepara la posición de spawn del jugador para aplicarla al comenzar.
+    ///  ¡¡¡¡¡¡ SE TIENE QUE CAMBIAR PARA EL RESTO DE CONFIGURACIONES DE MAPAS !!!!!!
     /// </summary>
     public Vector3 GetPlayerSpawnPosition()
     {
         return new Vector3(-2.5f, -2.5f, -0.1f);
     }
 
-    /// <summary>
-    /// Calcula y prepara la posición de spawn del jugador para aplicarla al registrarse.
-    /// </summary>
-    private void preparePlayerSpawn()
-    {
-        if (!tryCalculateSpawnPos(out Vector3 spawnPos))
-        {
-            Debug.LogWarning("[LevelGenerator] No se pudo calcular posición de spawn del player.");
-            return;
-        }
 
-        pendingSpawnPos = spawnPos;
-        hasPendingSpawn = true;
 
-        PlayerController existingPlayer = GameManager.Instance?.LocalPlayerController;
-        if (existingPlayer != null)
-        {
-            applySpawnAndCharacter(existingPlayer, pendingSpawnPos);
-            hasPendingSpawn = false;
-        }
-    }
+    ///////// FUNCIONES QUE SE USABAN PARA EL LOCAL (SIN BORRAR)
 
     /// <summary>
     /// Aplica el spawn pendiente cuando se registra el jugador local.
@@ -316,9 +299,6 @@ public class LevelGenerator : MonoBehaviour
         applySpawnAndCharacter(player, pendingSpawnPos);
         hasPendingSpawn = false;
     }
-
-
-    
 
     /// <summary>
     /// Activa y posiciona al jugador y aplica su configuración visual y de estadísticas.
