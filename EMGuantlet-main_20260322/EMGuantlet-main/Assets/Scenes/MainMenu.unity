@@ -408,6 +408,7 @@ MonoBehaviour:
   mapsDropdown: {fileID: 473651867}
   errorPanel: {fileID: 1197436438}
   errorText: {fileID: 692469796}
+  closeErrorButton: {fileID: 1334594014}
 --- !u!114 &118131780
 MonoBehaviour:
   m_ObjectHideFlags: 0

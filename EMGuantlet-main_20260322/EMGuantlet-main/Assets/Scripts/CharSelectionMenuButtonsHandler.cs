@@ -11,7 +11,7 @@ public class CharSelectionMenuButtonsHandler : MonoBehaviour
     [SerializeField] private PlayerStats redCharacterStats;
     [SerializeField] private PlayerStats yellowCharacterStats;
 
-    [Header("Personajes en el Escenario Lobby")]
+    [Header("Characters Sprites")]
     public GameObject lobbyGreenCharacter;
     public GameObject lobbyPurpleCharacter;
     public GameObject lobbyRedCharacter;
@@ -48,51 +48,57 @@ public class CharSelectionMenuButtonsHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Selecciona el personaje verde e inicia la partida.
+    /// Selecciona el personaje verde y comprueba si está disponible.
     /// </summary>
     public void OnGreenButtonClicked() => charSelNetworkManager.RequestCharacter(CharacterColor.Green);
 
     /// <summary>
-    /// Selecciona el personaje morado e inicia la partida.
+    /// Selecciona el personaje morado y comprueba si está disponible.
     /// </summary>
     public void OnPurpleButtonClicked() => charSelNetworkManager.RequestCharacter(CharacterColor.Purple);
 
     /// <summary>
-    /// Selecciona el personaje rojo e inicia la partida.
+    /// Selecciona el personaje rojo y comprueba si está disponible.
     /// </summary>
     public void OnRedButtonClicked() => charSelNetworkManager.RequestCharacter(CharacterColor.Red);
 
     /// <summary>
-    /// Selecciona el personaje amarillo e inicia la partida.
+    /// Selecciona el personaje amarillo y comprueba si está disponible.
     /// </summary>
     public void OnYellowButtonClicked() => charSelNetworkManager.RequestCharacter(CharacterColor.Yellow);
 
+    /// <summary>
+    /// Actualiza visualmente los botones de selección de personajes.
+    /// </summary>
     public void UpdateButtonState(CharacterColor color, bool isTaken)
     {
         switch (color)
         {
             case CharacterColor.Green:
                 if (greenButton != null) greenButton.interactable = !isTaken;
-                if (lobbyGreenCharacter != null) lobbyGreenCharacter.SetActive(isTaken); // ¡Nueva línea!
+                if (lobbyGreenCharacter != null) lobbyGreenCharacter.SetActive(isTaken);
                 break;
 
             case CharacterColor.Purple:
                 if (purpleButton != null) purpleButton.interactable = !isTaken;
-                if (lobbyPurpleCharacter != null) lobbyPurpleCharacter.SetActive(isTaken); // ¡Nueva línea!
+                if (lobbyPurpleCharacter != null) lobbyPurpleCharacter.SetActive(isTaken);
                 break;
 
             case CharacterColor.Red:
                 if (redButton != null) redButton.interactable = !isTaken;
-                if (lobbyRedCharacter != null) lobbyRedCharacter.SetActive(isTaken); // ¡Nueva línea!
+                if (lobbyRedCharacter != null) lobbyRedCharacter.SetActive(isTaken);
                 break;
 
             case CharacterColor.Yellow:
                 if (yellowButton != null) yellowButton.interactable = !isTaken;
-                if (lobbyYellowCharacter != null) lobbyYellowCharacter.SetActive(isTaken); // ¡Nueva línea!
+                if (lobbyYellowCharacter != null) lobbyYellowCharacter.SetActive(isTaken);
                 break;
         }
     }
 
+    /// <summary>
+    /// Confirma la selección de personaje y carga sus stats.
+    /// </summary>
     public void ConfirmLocalCharacter(CharacterColor color)
     {
         PlayerStats selectedStats = null;

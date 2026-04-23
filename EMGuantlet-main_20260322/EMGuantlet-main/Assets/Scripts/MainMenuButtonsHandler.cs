@@ -3,6 +3,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Netcode;
+using UnityEngine.UI;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,9 +18,10 @@ public class MainMenuButtonsHandler : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMP_Dropdown mapsDropdown;
 
-    [Header("UI Errores")]
+    [Header("UI Panels")]
     [SerializeField] private GameObject errorPanel;
     [SerializeField] private TMP_Text errorText;
+    [SerializeField] private Button closeErrorButton;
 
     /// <summary>
     /// Inicializa el dropdown de mapas al cargar el menú principal.
@@ -27,7 +30,6 @@ public class MainMenuButtonsHandler : MonoBehaviour
     {
         if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
         {
-            Debug.Log("[MainMenu] Apagando sesión de red fantasma anterior...");
             NetworkManager.Singleton.Shutdown();
         }
 
@@ -44,19 +46,13 @@ public class MainMenuButtonsHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Navega a la escena de selección de personaje si hay mapa seleccionado.
+    /// Navega a la escena de selección de personaje como Host si hay mapa seleccionado.
     /// </summary>
     public void OnStartHostClicked()
     {
         if (GameManager.Instance?.SelectedMapConfig == null)
         {
             Debug.LogWarning("[MainMenu] No hay mapa seleccionado.");
-            return;
-        }
-
-        if (NetworkManager.Singleton.IsListening)
-        {
-            Debug.LogWarning("[MainMenu] La red ya está iniciada. Ignorando clic adicional.");
             return;
         }
 
@@ -90,6 +86,9 @@ public class MainMenuButtonsHandler : MonoBehaviour
             return;
         }
 
+        ShowErrorPanel("Esperando al host...");
+        if (closeErrorButton != null) closeErrorButton.interactable = false;
+
         NetworkManager.Singleton.NetworkConfig.ConnectionApproval = true;
 
         string clientMap = GameManager.Instance.SelectedMapConfig.mapName;
@@ -106,7 +105,7 @@ public class MainMenuButtonsHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// El Host ejecuta esto cada vez que alguien intenta entrar a la partida.
+    /// El Host comprueba si el cliente ha seleccionado el mismo mapa y decide si es valido o no
     /// </summary>
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
@@ -119,7 +118,6 @@ public class MainMenuButtonsHandler : MonoBehaviour
         {
             response.Approved = false;
             response.Reason = "No se ha enviado información del mapa.";
-            Debug.LogWarning("[Host] Se rechazó a un jugador porque su paquete de datos estaba vacío.");
             return;
         }
 
@@ -132,30 +130,57 @@ public class MainMenuButtonsHandler : MonoBehaviour
         {
             response.Approved = false;
             response.Reason = $"El Host está jugando en '{mapaDelHost}'. Cambia tu mapa para unirte.";
-            Debug.Log($"[Host] Se rechazó a un jugador porque traía el mapa: {mapaSolicitado}");
         }
     }
 
     /// <summary>
-    /// El Cliente ejecuta esto si el Host le rechaza la conexión.
+    /// El Cliente ejecuta esto si el Host rechaza su conexión.
     /// </summary>
     private void OnClientRejected(ulong clientId)
     {
         if (clientId == NetworkManager.Singleton.LocalClientId)
         {
             string reason = NetworkManager.Singleton.DisconnectReason;
-            Debug.LogWarning($"[Cliente] Conexión rechazada: {reason}");
 
-            if (errorPanel != null && errorText != null)
+            if (string.IsNullOrEmpty(reason))
             {
-                if (string.IsNullOrEmpty(reason)) reason = "Conexión rechazada por el servidor.";
-
-                errorText.text = reason;
-                errorPanel.SetActive(true);
+                reason = "No se ha encontrado ninguna partida activa.";
             }
+
+            ShowErrorPanel(reason);
+            if (closeErrorButton != null) closeErrorButton.interactable = true;
 
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientRejected;
             NetworkManager.Singleton.Shutdown();
+        }
+    }
+
+    /// <summary>
+    /// Método auxiliar para mostrar el panel de error o mensajes de estado de red.
+    /// </summary>
+    private void ShowErrorPanel(string mensaje)
+    {
+        if (errorPanel != null && errorText != null)
+        {
+            errorText.text = mensaje;
+            errorPanel.SetActive(true);
+
+            Debug.Log($"[UI Error] Mostrando mensaje: {mensaje}");
+        }
+        else
+        {
+            Debug.LogWarning($"[UI Error] Se intentó mostrar un error pero faltan referencias en el Inspector. Mensaje: {mensaje}");
+        }
+    }
+
+    /// <summary>
+    /// Cierra el panel emergente de error de conexión.
+    /// </summary>
+    public void OnCloseErrorPanelClicked()
+    {
+        if (errorPanel != null)
+        {
+            errorPanel.SetActive(false);
         }
     }
 
@@ -173,11 +198,11 @@ public class MainMenuButtonsHandler : MonoBehaviour
     public void OnExitButtonClicked()
     {
         Debug.Log("Exit button pressed");
-#if UNITY_EDITOR
-        EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        #if UNITY_EDITOR
+                EditorApplication.isPlaying = false;
+        #else
+                Application.Quit();
+        #endif
     }
 
     /// <summary>
@@ -225,16 +250,5 @@ public class MainMenuButtonsHandler : MonoBehaviour
 
         GameManager.Instance.SelectedMapConfig = availableMaps[index];
         Debug.Log($"[MainMenu] Mapa seleccionado: {availableMaps[index].mapName}");
-    }
-
-    /// <summary>
-    /// Cierra el panel emergente de error de conexión.
-    /// </summary>
-    public void OnCloseErrorPanelClicked()
-    {
-        if (errorPanel != null)
-        {
-            errorPanel.SetActive(false);
-        }
     }
 }

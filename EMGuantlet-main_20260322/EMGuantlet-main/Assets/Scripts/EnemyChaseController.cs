@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class EnemyChaseController : EnemyController
 {
+    private Transform playerTransform;
+    private Vector2 wanderDirection;
+    private float wanderSpeed;
+    private float wanderTimer;
+
     protected float chaseRange;
     protected float wanderChangeInterval;
     protected float wanderSpeedMin;
     protected float wanderSpeedMax;
     protected float idleChance;
-
-    private Transform playerTransform;
-    private Vector2 wanderDirection;
-    private float wanderSpeed;
-    private float wanderTimer;
 
     /// <summary>
     /// Inicializa la referencia al jugador y configura el estado inicial de vagabundeo.

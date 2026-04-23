@@ -4,24 +4,25 @@ using Unity.Netcode;
 
 public class PlayerController : CharController
 {
+    private PlayerControls controls;
+    private bool isReadyForMultiplayer = false;
+
     protected int damageToEnemy;
     protected float attackCooldown;
-
-    private PlayerControls controls;
 
     public bool IsAttacking { get; private set; } = false;
     public int DamageToEnemy => damageToEnemy;
 
-    [Header("Multiplayer Visuals")]
+    [Header("Multiplayer Colors")]
     [SerializeField] private PlayerStats[] allCharacters;
 
+    // Variable compartida
     private NetworkVariable<int> selectedCharacterIndex = new NetworkVariable<int>(
         -1,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Owner
     );
 
-    private bool isReadyForMultiplayer = false;
 
     /// <summary>
     /// Inicializa controles de entrada y registra el jugador local en el gestor global.
@@ -29,14 +30,13 @@ public class PlayerController : CharController
     protected override void Awake()
     {
         base.Awake();
-        controls = new PlayerControls();
-        controls.Player.Move.performed += ctx => movement = ctx.ReadValue<Vector2>();
-        controls.Player.Move.canceled += _ => movement = Vector2.zero;
 
-        // ✅ Ocultar hasta que LevelGenerator lo reposicione
-        //gameObject.SetActive(false);
         if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = false;
-        if (TryGetComponent(out Collider2D col)) col.enabled = false;
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        foreach (Collider2D col in colliders)
+        {
+            col.enabled = false;
+        }
     }
 
     /// <summary>
@@ -48,11 +48,16 @@ public class PlayerController : CharController
 
         if (IsOwner)
         {
-            Camera mainCam = Camera.main;
-            if (mainCam != null)
+            controls = new PlayerControls();
+            controls.Player.Move.performed += ctx => movement = ctx.ReadValue<Vector2>();
+            controls.Player.Move.canceled += _ => movement = Vector2.zero;
+            controls.Player.Attack.performed += onAttack;
+            controls.Enable();
+
+            UniqueEntity uniqueEntity = GetComponent<UniqueEntity>();
+            if (GameManager.Instance != null)
             {
-                mainCam.transform.SetParent(this.transform);
-                mainCam.transform.localPosition = new Vector3(0f, 0f, -10f);
+                GameManager.Instance.RegisterLocalPlayer(this, uniqueEntity);
             }
 
             int index = FindCharacterIndex(GameManager.Instance.SelectedCharacterStats);
@@ -65,6 +70,16 @@ public class PlayerController : CharController
         {
             ApplyVisuals(selectedCharacterIndex.Value);
         }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (IsOwner && controls != null)
+        {
+            controls.Player.Attack.performed -= onAttack;
+            controls.Disable();
+        }
+        base.OnNetworkDespawn();
     }
 
     private void ApplyVisuals(int index)
@@ -81,9 +96,16 @@ public class PlayerController : CharController
         this.stats = selectedStats;
         LoadStats();
 
-        isReadyForMultiplayer = true;
         if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = true;
-        if (TryGetComponent(out Collider2D col)) col.enabled = true;
+
+        Invoke(nameof(EnablePhysics), 0.5f);
+    }
+
+    private void EnablePhysics()
+    {
+        isReadyForMultiplayer = true;
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        foreach (Collider2D col in colliders) col.enabled = true;
     }
 
     private int FindCharacterIndex(PlayerStats targetStats)
@@ -129,29 +151,6 @@ public class PlayerController : CharController
     }
 
     /// <summary>
-    /// Activa el mapa de controles y suscribe la acción de ataque.
-    /// </summary>
-    private void OnEnable()
-    {
-        if (controls == null) controls = new PlayerControls();
-        if (!IsOwner) return;
-
-        controls.Enable();
-        controls.Player.Attack.performed += onAttack;
-    }
-
-    /// <summary>
-    /// Desuscribe la acción de ataque y desactiva el mapa de controles.
-    /// </summary>
-    private void OnDisable()
-    {
-        if (!IsOwner || controls == null) return;
-
-        controls.Player.Attack.performed -= onAttack;
-        controls.Disable();
-    }
-
-    /// <summary>
     /// Gestiona la muerte del jugador y lanza el flujo de fin de partida.
     /// </summary>
     public override void Die()
@@ -162,9 +161,7 @@ public class PlayerController : CharController
 
         // Dispara evento de muerte
         GameEvents.PlayerDied();
-
         GameManager.Instance?.TriggerGameOver();
-
     }
 
     /// <summary>
@@ -185,22 +182,9 @@ public class PlayerController : CharController
     /// </summary>
     public void ApplyCharacterStats(PlayerStats newStats)
     {
-        if (newStats == null)
-        {
-            Debug.LogWarning("[PlayerController] ApplyCharacterStats llamado con null");
-            return;
-        }
-
+        if (newStats == null) return;
         stats = newStats;
-
-        isReadyForMultiplayer = true;
-        if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = true;
-        if (TryGetComponent(out Collider2D col)) col.enabled = true;
-
-        // Recargar todas las stats
         LoadStats();
-
-        Debug.Log($"[PlayerController] Stats aplicadas: {newStats.characterName}");
     }
 
     /// <summary>
@@ -215,12 +199,6 @@ public class PlayerController : CharController
         {
             stats = GameManager.Instance.SelectedCharacterStats;
             Debug.Log($"[PlayerController] Cargando personaje seleccionado: {stats.characterName}");
-        }
-
-        // Si no hay personaje seleccionado, usa el asignado en el prefab (fallback)
-        if (stats == null)
-        {
-            Debug.LogWarning("[PlayerController] No hay personaje seleccionado, usando stats por defecto del prefab");
         }
 
         base.LoadStats();
@@ -270,6 +248,8 @@ public class PlayerController : CharController
         animator.SetTrigger("Attack");
         IsAttacking = true;
         Invoke(nameof(endAttack), attackCooldown);
+
+        NotifyAttackServerRpc();
     }
 
     /// <summary>
@@ -278,5 +258,45 @@ public class PlayerController : CharController
     private void endAttack()
     {
         IsAttacking = false;
+    }
+
+    /// <summary>
+    /// El Servidor recibe la señal de que este jugador ha atacado.
+    /// </summary>
+    [Rpc(SendTo.Server)]
+    private void NotifyAttackServerRpc()
+    {
+        PlayAttackAnimationRpc();
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void PlayAttackAnimationRpc()
+    {
+        if (IsOwner) return;
+
+        animator.SetTrigger("Attack");
+    }
+
+    /// <summary>
+    /// Activa el mapa de controles y suscribe la acción de ataque.
+    /// </summary>
+    private void OnEnable()
+    {
+        if (controls == null) controls = new PlayerControls();
+        if (!IsOwner) return;
+
+        controls.Enable();
+        controls.Player.Attack.performed += onAttack;
+    }
+
+    /// <summary>
+    /// Desuscribe la acción de ataque y desactiva el mapa de controles.
+    /// </summary>
+    private void OnDisable()
+    {
+        if (!IsOwner || controls == null) return;
+
+        controls.Player.Attack.performed -= onAttack;
+        controls.Disable();
     }
 }

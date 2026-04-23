@@ -6,16 +6,20 @@ public enum CharacterColor { Red, Green, Yellow, Purple }
 
 public class CharSelectionNetworkManager : NetworkBehaviour
 {
+    private Dictionary<ulong, CharacterColor> playerSelections = new Dictionary<ulong, CharacterColor>();
+
     [Header("UI Reference")]
     public CharSelectionMenuButtonsHandler uiHandler;
 
+    [Header("Taken characters")]
     public NetworkVariable<bool> isGreenTaken = new NetworkVariable<bool>(false);
     public NetworkVariable<bool> isPurpleTaken = new NetworkVariable<bool>(false);
     public NetworkVariable<bool> isRedTaken = new NetworkVariable<bool>(false);
     public NetworkVariable<bool> isYellowTaken = new NetworkVariable<bool>(false);
 
-    private Dictionary<ulong, CharacterColor> playerSelections = new Dictionary<ulong, CharacterColor>();
-
+    /// <summary>
+    /// Método encargado de mostrar qué personajes se encuentran libres para seleccionar.
+    /// </summary>
     public override void OnNetworkSpawn()
     {
         isGreenTaken.OnValueChanged += (oldVal, newVal) => uiHandler.UpdateButtonState(CharacterColor.Green, newVal);
@@ -34,6 +38,9 @@ public class CharSelectionNetworkManager : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Función llamada cuando un jugador se desconecta/vuelve atrás.
+    /// </summary>
     public override void OnNetworkDespawn()
     {
         if (IsServer && NetworkManager.Singleton != null)
@@ -42,6 +49,9 @@ public class CharSelectionNetworkManager : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Reestablece la disponibilidad del personaje cuando el jugador se desconecta.
+    /// </summary>
     private void HandleClientDisconnect(ulong clientId)
     {
         if (playerSelections.TryGetValue(clientId, out CharacterColor colorToFree))
@@ -59,6 +69,9 @@ public class CharSelectionNetworkManager : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Llama a la función principal que avisa al servidor para solicitar un personaje.
+    /// </summary>
     public void RequestCharacter(CharacterColor color)
     {
         if (NetworkManager.Singleton != null)
@@ -74,6 +87,9 @@ public class CharSelectionNetworkManager : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Comprueba preguntando al servidor la disponibilidad del personaje seleccionado.
+    /// </summary>
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void RequestCharacterServerRpc(CharacterColor requestedChar, RpcParams rpcParams = default)
     {
@@ -106,6 +122,9 @@ public class CharSelectionNetworkManager : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Confirma la selección de personaje y lo comunica a todos.
+    /// </summary>
     [Rpc(SendTo.Everyone)]
     public void ConfirmCharacterRpc(CharacterColor confirmedChar, ulong ownerClientId)
     {

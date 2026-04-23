@@ -13,6 +13,10 @@ public static class SceneNames
 
 public class GameManager : MonoBehaviour
 {
+
+    [SerializeField] private float delayBeforeScene = 0.5f;
+    private PlayerGameState playerState;
+
     public static GameManager Instance { get; private set; }
 
     public PlayerController LocalPlayerController { get; private set; }
@@ -22,10 +26,6 @@ public class GameManager : MonoBehaviour
     public int EnemiesKilled { get; private set; }
     public PlayerStats SelectedCharacterStats { get; set; }
     public MapConfig SelectedMapConfig { get; set; }
-
-    [SerializeField] private float delayBeforeScene = 0.5f;
-
-    private PlayerGameState playerState;
 
     /// <summary>
     /// Inicializa el singleton del juego y sus datos persistentes.

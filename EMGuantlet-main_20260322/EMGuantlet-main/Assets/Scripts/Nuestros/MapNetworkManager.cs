@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class MapNetworkManager : NetworkBehaviour
 {
+    private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0);
+
     [Header("Referencias")]
-    [Tooltip("Arrastra aquí tu objeto que tiene el script LevelGenerator")]
     public LevelGenerator levelGenerator;
     public GameObject playerPrefab;
-
-    private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0);
 
     public override void OnNetworkSpawn()
     {
