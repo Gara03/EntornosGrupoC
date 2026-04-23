@@ -111,7 +111,7 @@ public class MainMenuButtonsHandler : MonoBehaviour
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
         response.Approved = true;
-        response.CreatePlayerObject = true;
+        response.CreatePlayerObject = false;
 
         if (request.ClientNetworkId == NetworkManager.Singleton.LocalClientId) return;
 

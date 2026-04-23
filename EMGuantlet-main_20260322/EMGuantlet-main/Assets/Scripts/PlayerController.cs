@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Netcode;
 
 public class PlayerController : CharController
 {
@@ -11,6 +12,17 @@ public class PlayerController : CharController
     public bool IsAttacking { get; private set; } = false;
     public int DamageToEnemy => damageToEnemy;
 
+    [Header("Multiplayer Visuals")]
+    [SerializeField] private PlayerStats[] allCharacters;
+
+    private NetworkVariable<int> selectedCharacterIndex = new NetworkVariable<int>(
+        -1,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner
+    );
+
+    private bool isReadyForMultiplayer = false;
+
     /// <summary>
     /// Inicializa controles de entrada y registra el jugador local en el gestor global.
     /// </summary>
@@ -18,16 +30,68 @@ public class PlayerController : CharController
     {
         base.Awake();
         controls = new PlayerControls();
-
         controls.Player.Move.performed += ctx => movement = ctx.ReadValue<Vector2>();
         controls.Player.Move.canceled += _ => movement = Vector2.zero;
 
         // ✅ Ocultar hasta que LevelGenerator lo reposicione
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
+        if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = false;
+        if (TryGetComponent(out Collider2D col)) col.enabled = false;
+    }
 
-        UniqueEntity uniqueEntity = GetComponent<UniqueEntity>();
-        if (GameManager.Instance != null)
-            GameManager.Instance.RegisterLocalPlayer(this, uniqueEntity);
+    /// <summary>
+    /// [NUEVO] Se ejecuta en cuanto el jugador "nace" en la red.
+    /// </summary>
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        if (IsOwner)
+        {
+            Camera mainCam = Camera.main;
+            if (mainCam != null)
+            {
+                mainCam.transform.SetParent(this.transform);
+                mainCam.transform.localPosition = new Vector3(0f, 0f, -10f);
+            }
+
+            int index = FindCharacterIndex(GameManager.Instance.SelectedCharacterStats);
+            selectedCharacterIndex.Value = index;
+        }
+
+        selectedCharacterIndex.OnValueChanged += (oldVal, newVal) => ApplyVisuals(newVal);
+
+        if (selectedCharacterIndex.Value != -1)
+        {
+            ApplyVisuals(selectedCharacterIndex.Value);
+        }
+    }
+
+    private void ApplyVisuals(int index)
+    {
+        if (index < 0 || index >= allCharacters.Length) return;
+        PlayerStats selectedStats = allCharacters[index];
+
+        if (animator != null && selectedStats.animatorController != null)
+        {
+            animator.runtimeAnimatorController = selectedStats.animatorController;
+            animator.Update(0);
+        }
+
+        this.stats = selectedStats;
+        LoadStats();
+
+        isReadyForMultiplayer = true;
+        if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = true;
+        if (TryGetComponent(out Collider2D col)) col.enabled = true;
+    }
+
+    private int FindCharacterIndex(PlayerStats targetStats)
+    {
+        if (allCharacters == null) return 0;
+        for (int i = 0; i < allCharacters.Length; i++)
+            if (allCharacters[i] == targetStats) return i;
+        return 0;
     }
 
     /// <summary>
@@ -36,6 +100,7 @@ public class PlayerController : CharController
     protected override void Start()
     {
         base.Start();
+        if (!IsOwner) return;
 
         // Dispara eventos iniciales para actualizar el HUD
         GameEvents.HealthChanged(health);
@@ -50,7 +115,7 @@ public class PlayerController : CharController
     /// </summary>
     protected override void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || !isReadyForMultiplayer) return;
 
         animator.SetFloat("speed", movement.sqrMagnitude);
 
@@ -68,6 +133,7 @@ public class PlayerController : CharController
     /// </summary>
     private void OnEnable()
     {
+        if (controls == null) controls = new PlayerControls();
         if (!IsOwner) return;
 
         controls.Enable();
@@ -79,7 +145,7 @@ public class PlayerController : CharController
     /// </summary>
     private void OnDisable()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || controls == null) return;
 
         controls.Player.Attack.performed -= onAttack;
         controls.Disable();
@@ -106,7 +172,7 @@ public class PlayerController : CharController
     /// </summary>
     public override void TakeDamage(int amount, Vector2 knockbackDir)
     {
-        if (!IsOwner) return;
+        if (!IsOwner || !isReadyForMultiplayer) return;
 
         base.TakeDamage(amount, knockbackDir);
 
@@ -119,8 +185,6 @@ public class PlayerController : CharController
     /// </summary>
     public void ApplyCharacterStats(PlayerStats newStats)
     {
-        if (!IsOwner) return;
-
         if (newStats == null)
         {
             Debug.LogWarning("[PlayerController] ApplyCharacterStats llamado con null");
@@ -128,6 +192,10 @@ public class PlayerController : CharController
         }
 
         stats = newStats;
+
+        isReadyForMultiplayer = true;
+        if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = true;
+        if (TryGetComponent(out Collider2D col)) col.enabled = true;
 
         // Recargar todas las stats
         LoadStats();
@@ -184,7 +252,7 @@ public class PlayerController : CharController
     /// </summary>
     private void checkDeath()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || !isReadyForMultiplayer) return;
 
         if (health <= 0 && !isDead)
         {
@@ -197,7 +265,7 @@ public class PlayerController : CharController
     /// </summary>
     private void onAttack(InputAction.CallbackContext context)
     {
-        if (!IsOwner) return;
+        if (!IsOwner || !isReadyForMultiplayer) return;
 
         animator.SetTrigger("Attack");
         IsAttacking = true;
@@ -209,8 +277,6 @@ public class PlayerController : CharController
     /// </summary>
     private void endAttack()
     {
-        if (!IsOwner) return;
-
         IsAttacking = false;
     }
 }

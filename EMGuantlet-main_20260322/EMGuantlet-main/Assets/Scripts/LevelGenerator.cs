@@ -52,7 +52,6 @@ public class LevelGenerator : MonoBehaviour
     private Tilemap tilemap;
     private bool hasPendingSpawn = false;
     private Vector3 pendingSpawnPos;
-
     private MapConfig activeConfig => GameManager.Instance?.SelectedMapConfig ?? defaultMapConfig;
 
     /// <summary>
@@ -61,7 +60,7 @@ public class LevelGenerator : MonoBehaviour
     private void Awake()
     {
         tilemap = FindFirstObjectByType<Tilemap>();
-        GameEvents.OnLocalPlayerRegistered += onLocalPlayerRegistered;
+        //GameEvents.OnLocalPlayerRegistered += onLocalPlayerRegistered;
     }
 
     /// <summary>
@@ -69,22 +68,7 @@ public class LevelGenerator : MonoBehaviour
     /// </summary>
     private void OnDestroy()
     {
-        GameEvents.OnLocalPlayerRegistered -= onLocalPlayerRegistered;
-    }
-
-    /// <summary>
-    /// Garantiza la configuración de mapa activa y ejecuta la generación inicial del nivel.
-    /// </summary>
-    private void Start()
-    {
-        if (GameManager.Instance != null && GameManager.Instance.SelectedMapConfig == null)
-        {
-            GameManager.Instance.SelectedMapConfig = defaultMapConfig;
-            Debug.Log("[LevelGenerator] Usando MapConfig por defecto.");
-        }
-
-        //generateLevel();
-        //preparePlayerSpawn();
+        //GameEvents.OnLocalPlayerRegistered -= onLocalPlayerRegistered;
     }
 
     /// <summary>
@@ -97,7 +81,6 @@ public class LevelGenerator : MonoBehaviour
         Random.InitState(seed);
 
         generateLevel();
-        preparePlayerSpawn();
     }
 
     /// <summary>
@@ -296,6 +279,14 @@ public class LevelGenerator : MonoBehaviour
     /// <summary>
     /// Calcula y prepara la posición de spawn del jugador para aplicarla al registrarse.
     /// </summary>
+    public Vector3 GetPlayerSpawnPosition()
+    {
+        return new Vector3(-2.5f, -2.5f, -0.1f);
+    }
+
+    /// <summary>
+    /// Calcula y prepara la posición de spawn del jugador para aplicarla al registrarse.
+    /// </summary>
     private void preparePlayerSpawn()
     {
         if (!tryCalculateSpawnPos(out Vector3 spawnPos))
@@ -325,6 +316,9 @@ public class LevelGenerator : MonoBehaviour
         applySpawnAndCharacter(player, pendingSpawnPos);
         hasPendingSpawn = false;
     }
+
+
+    
 
     /// <summary>
     /// Activa y posiciona al jugador y aplica su configuración visual y de estadísticas.
