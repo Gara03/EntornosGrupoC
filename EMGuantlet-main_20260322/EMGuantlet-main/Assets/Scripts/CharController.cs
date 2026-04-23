@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(UniqueEntity))]
-public abstract class CharController : MonoBehaviour
+public abstract class CharController : NetworkBehaviour
 {
     [Header("Character Stats")]
     [SerializeField] protected CharacterStats stats;
@@ -60,6 +61,7 @@ public abstract class CharController : MonoBehaviour
     /// </summary>
     protected virtual void FixedUpdate()
     {
+        if (!IsOwner) return;
         if (isKnockback)
         {
             knockbackTimer -= Time.fixedDeltaTime;
@@ -79,6 +81,8 @@ public abstract class CharController : MonoBehaviour
     /// </summary>
     public virtual void Die()
     {
+        if (!IsOwner) return;
+
         if (isDead) return;
 
         isDead = true;
@@ -98,6 +102,8 @@ public abstract class CharController : MonoBehaviour
     /// </summary>
     public virtual void TakeDamage(int amount, Vector2 knockbackDir)
     {
+        if (!IsOwner) return;
+
         if (isDead) return;
         if (amount <= 0) return;
 
@@ -113,6 +119,8 @@ public abstract class CharController : MonoBehaviour
     /// </summary>
     public virtual void TakeKnockback(Vector2 knockbackDir, float customKnockbackForce = 0f)
     {
+        if (!IsOwner) return;
+
         if (isDead) return;
         if (isKnockback) return;
 
@@ -130,6 +138,8 @@ public abstract class CharController : MonoBehaviour
     /// </summary>
     protected virtual void LoadStats()
     {
+        if (!IsOwner) return;
+
         if (stats != null)
         {
             moveSpeed = stats.moveSpeed;
@@ -155,6 +165,8 @@ public abstract class CharController : MonoBehaviour
     /// </summary>
     protected virtual void Move()
     {
+        if (!IsOwner) return;
+
         rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
     }
 }

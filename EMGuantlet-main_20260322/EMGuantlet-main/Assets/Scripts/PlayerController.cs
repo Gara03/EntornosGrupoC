@@ -50,6 +50,8 @@ public class PlayerController : CharController
     /// </summary>
     protected override void Update()
     {
+        if (!IsOwner) return;
+
         animator.SetFloat("speed", movement.sqrMagnitude);
 
         if (movement.sqrMagnitude > 0.01f)
@@ -66,6 +68,8 @@ public class PlayerController : CharController
     /// </summary>
     private void OnEnable()
     {
+        if (!IsOwner) return;
+
         controls.Enable();
         controls.Player.Attack.performed += onAttack;
     }
@@ -75,6 +79,8 @@ public class PlayerController : CharController
     /// </summary>
     private void OnDisable()
     {
+        if (!IsOwner) return;
+
         controls.Player.Attack.performed -= onAttack;
         controls.Disable();
     }
@@ -84,6 +90,8 @@ public class PlayerController : CharController
     /// </summary>
     public override void Die()
     {
+        if (!IsOwner) return;
+
         base.Die();
 
         // Dispara evento de muerte
@@ -98,6 +106,8 @@ public class PlayerController : CharController
     /// </summary>
     public override void TakeDamage(int amount, Vector2 knockbackDir)
     {
+        if (!IsOwner) return;
+
         base.TakeDamage(amount, knockbackDir);
 
         // Dispara evento de cambio de salud
@@ -109,6 +119,8 @@ public class PlayerController : CharController
     /// </summary>
     public void ApplyCharacterStats(PlayerStats newStats)
     {
+        if (!IsOwner) return;
+
         if (newStats == null)
         {
             Debug.LogWarning("[PlayerController] ApplyCharacterStats llamado con null");
@@ -128,6 +140,8 @@ public class PlayerController : CharController
     /// </summary>
     protected override void LoadStats()
     {
+        if (!IsOwner) return;
+
         // ✅ PRIMERO: Intenta cargar desde GameManager (personaje seleccionado)
         if (GameManager.Instance != null && GameManager.Instance.SelectedCharacterStats != null)
         {
@@ -170,6 +184,8 @@ public class PlayerController : CharController
     /// </summary>
     private void checkDeath()
     {
+        if (!IsOwner) return;
+
         if (health <= 0 && !isDead)
         {
             Die();
@@ -181,6 +197,8 @@ public class PlayerController : CharController
     /// </summary>
     private void onAttack(InputAction.CallbackContext context)
     {
+        if (!IsOwner) return;
+
         animator.SetTrigger("Attack");
         IsAttacking = true;
         Invoke(nameof(endAttack), attackCooldown);
@@ -191,6 +209,8 @@ public class PlayerController : CharController
     /// </summary>
     private void endAttack()
     {
+        if (!IsOwner) return;
+
         IsAttacking = false;
     }
 }

@@ -5,6 +5,7 @@ public static class SceneNames
 {
     public const string MainMenu = "MainMenu";
     public const string CharSelection = "CharSelectionScene";
+    public const string Lobby = "Lobby";
     public const string PlaygroundLevel = "PlaygroundLevel";
     public const string DeadScene = "DeadScene";
     public const string VictoryScene = "VictoryScene";
@@ -161,10 +162,15 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    public void PrepareMultiplayerGame()
+    {
+        ResetGameData();
+    }
+
     /// <summary>
     /// Guarda el personaje seleccionado, reinicia datos y carga el nivel de juego.
     /// </summary>
-    public void StartGame(PlayerStats selectedCharacter)
+    /*public void StartGame(PlayerStats selectedCharacter)
     {
         if (selectedCharacter == null)
         {
@@ -186,7 +192,7 @@ public class GameManager : MonoBehaviour
     {
         SelectedMapConfig = selectedMap;
         StartGame(selectedCharacter);
-    }
+    }*/
 
     /// <summary>
     /// Inicia el flujo de fin de partida por muerte del jugador.

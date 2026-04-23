@@ -19,7 +19,7 @@ EditorBuildSettings:
     guid: 174e7a8c558e3fd4b882dbaf4ae61d93
   - enabled: 1
     path: Assets/Scenes/VictoryScene.unity
-    guid: 8e00a0789a1fb6f4b8088422267e504b
+    guid: 9e62ce2a66d43f34cbdc49803cbd90b8
   - enabled: 1
     path: Assets/Scenes/DeadScene.unity
     guid: cecf304805cab364b8557e6945977af7
