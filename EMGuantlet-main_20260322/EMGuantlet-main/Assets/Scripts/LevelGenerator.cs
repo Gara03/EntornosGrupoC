@@ -83,6 +83,19 @@ public class LevelGenerator : MonoBehaviour
             Debug.Log("[LevelGenerator] Usando MapConfig por defecto.");
         }
 
+        //generateLevel();
+        //preparePlayerSpawn();
+    }
+
+    /// <summary>
+    /// Inicia la generación del mapa asegurando que la aleatoriedad es idéntica para todos en la red.
+    /// </summary>
+    public void StartGenerationWithSeed(int seed)
+    {
+        Debug.Log($"[LevelGenerator] Generando mapa multijugador con semilla: {seed}");
+
+        Random.InitState(seed);
+
         generateLevel();
         preparePlayerSpawn();
     }
@@ -124,6 +137,16 @@ public class LevelGenerator : MonoBehaviour
         if (treasurePrefab != null)
         {
             GameObject chest = Instantiate(treasurePrefab, center, Quaternion.identity);
+
+            if (Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsServer)
+            {
+                var networkObject = chest.GetComponent<Unity.Netcode.NetworkObject>();
+                if (networkObject != null && !networkObject.IsSpawned)
+                {
+                    networkObject.Spawn();
+                }
+            }
+
             UniqueEntity uniqueEntity = chest.GetComponent<UniqueEntity>();
             if (uniqueEntity != null) uniqueEntity.RegenerateIdOnSpawn();
         }
