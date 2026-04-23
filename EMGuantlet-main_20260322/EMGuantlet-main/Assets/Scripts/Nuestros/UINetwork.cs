@@ -7,11 +7,20 @@ public class UINetwork : MonoBehaviour
 
     private void Awake()
     {
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.gameObject != this.gameObject)
+        {
+            Debug.Log("[Red] Clon del NetworkManager detectado al volver al menú. Destruyendo...");
+            Destroy(this.gameObject);
+            return;
+        }
+
         m_NetworkManager = GetComponent<NetworkManager>();
     }
 
     private void OnGUI()
     {
+        if (m_NetworkManager == null) return;
+
         GUILayout.BeginArea(new Rect(10, 10, 300, 300));
         if (!m_NetworkManager.IsClient && !m_NetworkManager.IsServer)
         {
