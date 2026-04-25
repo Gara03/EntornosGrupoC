@@ -1935,7 +1935,7 @@ GameObject:
   - component: {fileID: 1197436441}
   - component: {fileID: 1197436440}
   m_Layer: 5
-  m_Name: mapMessage_Panel
+  m_Name: Message_Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

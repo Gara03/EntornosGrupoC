@@ -121,6 +121,7 @@ public class LevelGenerator : MonoBehaviour
         {
             GameObject chest = Instantiate(treasurePrefab, center, Quaternion.identity);
 
+            // Se usa Network Object ya que el cofre debe de sincronizarse para todos los clientes
             if (Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsServer)
             {
                 var networkObject = chest.GetComponent<Unity.Netcode.NetworkObject>();
