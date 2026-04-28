@@ -20,6 +20,9 @@ public abstract class CharController : NetworkBehaviour
     protected bool isKnockback = false;
     protected float knockbackTimer = 0f;
 
+    public int Health => health;
+    public bool IsDead => isDead;
+
     protected Rigidbody2D rb;
     protected Animator animator;
     protected Vector2 movement;
@@ -138,7 +141,7 @@ public abstract class CharController : NetworkBehaviour
     /// </summary>
     protected virtual void LoadStats()
     {
-        if (!IsOwner) return;
+        //if (!IsOwner) return;
 
         if (stats != null)
         {

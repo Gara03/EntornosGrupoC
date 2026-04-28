@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Unity.Netcode;
 
 public abstract class EnemyController : CharController
 {
@@ -18,10 +19,12 @@ public abstract class EnemyController : CharController
     /// </summary>
     protected virtual void OnCollisionStay2D(Collision2D collision)
     {
+        if (!IsServer) return;
+
         if (!collision.gameObject.CompareTag("Player")) return;
 
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
-        if (player == null) return;
+        if (player == null || player.IsDead) return;
 
         if (player.IsAttacking)
         {
@@ -30,8 +33,14 @@ public abstract class EnemyController : CharController
         }
         else
         {
+            // El enemigo ataca. Guardamos la dirección del empuje
             Vector2 knockbackDir = (player.transform.position - transform.position).normalized;
-            player.TakeDamage(damageToPlayer, knockbackDir);
+
+            // LOG CHIVATO: Esto aparecerá en la consola del Host si el enemigo te toca
+            Debug.Log($"[Servidor] El enemigo intenta pegar al jugador. Daño base: {damageToPlayer}");
+
+            // Enviamos la orden de daño al cliente
+            player.ReceiveDamageRpc(damageToPlayer, knockbackDir);
         }
     }
 
@@ -76,10 +85,11 @@ public abstract class EnemyController : CharController
     /// </summary>
     protected void checkDeath()
     {
-        if (health <= 0)
+        if (IsServer && health <= 0)
         {
-            Die();
-            Destroy(gameObject, 1.2f);
+            spawnDrops();
+
+            GetComponent<NetworkObject>().Despawn();
         }
     }
 
@@ -143,5 +153,11 @@ public abstract class EnemyController : CharController
             return mapCfg.goatDropConfig;
 
         return null;
+    }
+    [ServerRpc(RequireOwnership =false)] //porb que el cliente no es dueño del enemigo
+    public void RequestHitServerRpc(int damage, ulong playerId)
+    {
+        TakeDamage(damage, Vector2.zero);
+        checkDeath();
     }
 }

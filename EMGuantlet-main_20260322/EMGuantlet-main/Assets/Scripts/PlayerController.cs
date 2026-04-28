@@ -204,36 +204,28 @@ public class PlayerController : CharController
     /// </summary>
     protected override void LoadStats()
     {
-        if (!IsOwner) return;
-
-        // PRIMERO: Intenta cargar desde GameManager (personaje seleccionado)
-        if (GameManager.Instance != null && GameManager.Instance.SelectedCharacterStats != null)
+        // 1. SOLO el dueño lee del GameManager local. El servidor respeta lo que le llega por red.
+        if (IsOwner && GameManager.Instance != null && GameManager.Instance.SelectedCharacterStats != null)
         {
             stats = GameManager.Instance.SelectedCharacterStats;
-            Debug.Log($"[PlayerController] Cargando personaje seleccionado: {stats.characterName}");
         }
 
+        // 2. Cargamos la vida y velocidad base (heredadas)
         base.LoadStats();
 
-        // Haz casting del campo heredado
+        // 3. Cargamos el daño y cooldown
         PlayerStats playerStats = stats as PlayerStats;
-
         if (playerStats != null)
         {
-            // Aplica el bonus de velocidad del jugador
             moveSpeed *= playerStats.speedBonus;
-            
-            // Carga stats específicas del jugador
             damageToEnemy = playerStats.attackDamage;
             attackCooldown = playerStats.attackCooldown;
         }
         else
         {
-            // Valores por defecto si no hay PlayerStats
-            Debug.LogWarning($"[{gameObject.name}] No tiene PlayerStats asignado. Usando valores por defecto.");
             damageToEnemy = 50;
             attackCooldown = 0.5f;
-            moveSpeed *= 1.25f; // Bonus por defecto
+            moveSpeed *= 1.25f;
         }
     }
 
@@ -272,14 +264,6 @@ public class PlayerController : CharController
         IsAttacking = false;
     }
 
-    /// <summary>
-    /// El Servidor recibe el aviso de que el jugador ha atacado.
-    /// </summary>
-    [Rpc(SendTo.Server)]
-    private void NotifyAttackServerRpc()
-    {
-        PlayAttackAnimationRpc();
-    }
 
     /// <summary>
     /// Todos los clientes y el Host reciben el aviso de que el jugador ha atacado.
@@ -313,5 +297,22 @@ public class PlayerController : CharController
 
         controls.Player.Attack.performed -= onAttack;
         controls.Disable();
+    }
+    [Rpc(SendTo.Owner)]
+    public void ReceiveDamageRpc(int amount, Vector2 knockbackDir)
+    {
+        Debug.Log($"[Cliente] ¡Me han pegado! Recibo {amount} de daño del servidor.");
+
+        TakeDamage(amount, knockbackDir);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void NotifyAttackServerRpc()
+    {
+        // ESTO ES VITAL: El servidor registra que estás atacando
+        IsAttacking = true;
+        Invoke(nameof(endAttack), attackCooldown);
+
+        PlayAttackAnimationRpc();
     }
 }

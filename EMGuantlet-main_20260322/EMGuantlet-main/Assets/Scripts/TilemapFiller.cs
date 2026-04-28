@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Unity.Netcode;
 
 [Serializable]
 public class WeightedTile
@@ -173,10 +174,20 @@ public class TilemapFiller : MonoBehaviour
             int randX = UnityEngine.Random.Range(xMin + 1, xMax - 1);
             int randY = UnityEngine.Random.Range(yMin + 1, yMax - 1);
             Vector3 spawnPos = new Vector3(randX + 0.5f, randY + 0.5f, -0.1f);
-
             GameObject spawner = Instantiate(enemySpawners[i], spawnPos, Quaternion.identity);
+
+            if (Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsServer)
+            {
+                var netObj = spawner.GetComponent<Unity.Netcode.NetworkObject>();
+                if (netObj != null && !netObj.IsSpawned)
+                {
+                    netObj.Spawn();
+                }
+            }
+
             UniqueEntity uniqueEntity = spawner.GetComponent<UniqueEntity>();
             if (uniqueEntity != null) uniqueEntity.RegenerateIdOnSpawn();
+
         }
     }
 
@@ -397,6 +408,15 @@ public class TilemapFiller : MonoBehaviour
 
             Vector3 spawnPos = new Vector3(randX + 0.5f, randY + 0.5f, -0.1f);
             GameObject spawner = Instantiate(enemySpawners[i], spawnPos, Quaternion.identity);
+
+            if(Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsServer)
+            {
+                var netObj = spawner.GetComponent<Unity.Netcode.NetworkObject>();
+                if (netObj != null && !netObj.IsSpawned)
+                {
+                    netObj.Spawn();
+                }
+            }
 
             UniqueEntity uniqueEntity = spawner.GetComponent<UniqueEntity>();
             if (uniqueEntity != null) uniqueEntity.RegenerateIdOnSpawn();

@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 [RequireComponent(typeof(UniqueEntity))]
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner : NetworkBehaviour
 {
     [Header("Configuración del Spawner")]
     [SerializeField] private GameObject enemyPrefab;
@@ -28,6 +29,8 @@ public class EnemySpawner : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (!IsServer) return; //solo el server gestiona el spawn
+
         if (enemyPrefab == null || spawnedCount >= totalEnemies)
             return;
 
@@ -55,8 +58,19 @@ public class EnemySpawner : MonoBehaviour
             spawnPos += new Vector3(offset.x, offset.y, 0f);
         }
 
-        GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
 
+        GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        
+        //para que aparezca en los clientes
+        NetworkObject netObj = enemy.GetComponent<NetworkObject>();
+
+        var networkObject = enemy.GetComponent<Unity.Netcode.NetworkObject>();
+        if (networkObject != null && !networkObject.IsSpawned)
+        {
+            networkObject.Spawn();
+        }
+
+        //esto lo dejamos para debug
         UniqueEntity uniqueEntity = enemy.GetComponent<UniqueEntity>();
         if (uniqueEntity != null)
             uniqueEntity.RegenerateIdOnSpawn();
