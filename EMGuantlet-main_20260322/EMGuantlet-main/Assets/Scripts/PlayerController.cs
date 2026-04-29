@@ -137,9 +137,9 @@ public class PlayerController : CharController
         if (!IsOwner) return;
 
         // Dispara eventos iniciales para actualizar el HUD
-        GameEvents.HealthChanged(health);
-        GameEvents.KeysChanged();
-        GameEvents.DiamondsChanged();
+        GameEvents.HealthChanged(OwnerClientId, health);
+        GameEvents.KeysChanged(OwnerClientId);
+        GameEvents.DiamondsChanged(OwnerClientId);
 
         IsAttacking = false;
     }
@@ -172,8 +172,20 @@ public class PlayerController : CharController
         base.Die();
 
         // Dispara evento de muerte
-        GameEvents.PlayerDied();
+        GameEvents.PlayerDied(OwnerClientId);
+
+        NotifyDeathServerRpc();
+
         GameManager.Instance?.TriggerGameOver();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void NotifyDeathServerRpc()
+    {
+        if (NetworkObject != null && NetworkObject.IsSpawned)
+        {
+            NetworkObject.Despawn(true); // Despawnea y destruye el objeto para los demás
+        }
     }
 
     /// <summary>
@@ -186,7 +198,7 @@ public class PlayerController : CharController
         base.TakeDamage(amount, knockbackDir);
 
         // Dispara evento de cambio de salud
-        GameEvents.HealthChanged(health);
+        GameEvents.HealthChanged(OwnerClientId, health);
     }
 
     /// <summary>

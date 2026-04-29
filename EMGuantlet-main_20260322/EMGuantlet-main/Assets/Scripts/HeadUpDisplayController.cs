@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
 
 public class HeadUpDisplayController : MonoBehaviour
 {
@@ -82,7 +83,7 @@ public class HeadUpDisplayController : MonoBehaviour
     /// <summary>
     /// Actualiza los dígitos de vida del bloque de HUD activo.
     /// </summary>
-    public void UpdateHearts(int hearts)
+    public void UpdateHearts(ulong clientId, int hearts)
     {
         if (activeBlock == null) return;
 
@@ -104,7 +105,7 @@ public class HeadUpDisplayController : MonoBehaviour
     /// <summary>
     /// Actualiza el dígito de llaves del bloque de HUD activo.
     /// </summary>
-    public void UpdateKeys()
+    public void UpdateKeys(ulong clientId)
     {
         if (activeBlock == null) return;
 
@@ -119,7 +120,7 @@ public class HeadUpDisplayController : MonoBehaviour
     /// <summary>
     /// Actualiza los dígitos de diamantes del bloque de HUD activo.
     /// </summary>
-    public void UpdateDiamonds()
+    public void UpdateDiamonds(ulong clientId)
     {
         if (activeBlock == null) return;
 

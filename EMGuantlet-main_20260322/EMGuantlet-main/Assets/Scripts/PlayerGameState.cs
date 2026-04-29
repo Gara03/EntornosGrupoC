@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 /// <summary>
 /// Representa el estado persistente de recursos del jugador durante la partida.
@@ -10,91 +11,71 @@ public class PlayerGameState
     public const int MAX_DIAMONDS = 999;
 
     public string playerId;
+    public ulong ownerClientId; // Necesario para saber a qué HUD avisar
 
     public int keys = 0;
     public int diamonds = 0;
 
     /// <summary>
-    /// Inicializa el estado del jugador con su identificador único.
+    /// Inicializa el estado del jugador con su identificador único y su ID de red.
     /// </summary>
-    public PlayerGameState(string entityId)
+    public PlayerGameState(string entityId, ulong clientId)
     {
         playerId = entityId;
+        ownerClientId = clientId;
     }
 
-    /// <summary>
-    /// Obtiene o establece las llaves actuales aplicando límites válidos.
-    /// </summary>
     public int Keys
     {
         get => keys;
         set
         {
-            keys = UnityEngine.Mathf.Clamp(value, 0, MAX_KEYS);
-            GameEvents.KeysChanged();
+            keys = Mathf.Clamp(value, 0, MAX_KEYS);
+            GameEvents.KeysChanged(ownerClientId);
         }
     }
 
-    /// <summary>
-    /// Obtiene o establece los diamantes actuales aplicando límites válidos.
-    /// </summary>
     public int Diamonds
     {
         get => diamonds;
         set
         {
-            diamonds = UnityEngine.Mathf.Clamp(value, 0, MAX_DIAMONDS);
-            GameEvents.DiamondsChanged();
+            diamonds = Mathf.Clamp(value, 0, MAX_DIAMONDS);
+            GameEvents.DiamondsChanged(ownerClientId);
         }
     }
 
-    /// <summary>
-    /// Incrementa una llave si no se ha alcanzado el máximo permitido.
-    /// </summary>
     public void AddKey()
     {
         if (keys < MAX_KEYS)
         {
-            Keys++;
-            GameEvents.KeysChanged();
+            Keys++; // Esto dispara el evento automáticamente por el setter
         }
     }
 
-    /// <summary>
-    /// Incrementa un diamante si no se ha alcanzado el máximo permitido.
-    /// </summary>
     public void AddDiamond()
     {
         if (diamonds < MAX_DIAMONDS)
         {
             Diamonds++;
-            GameEvents.DiamondsChanged();
         }
     }
 
-    /// <summary>
-    /// Consume una llave si hay disponibilidad y devuelve si la operación tuvo éxito.
-    /// </summary>
     public bool UseKey()
     {
         if (keys > 0)
         {
             Keys--;
-            GameEvents.KeysChanged();
             return true;
         }
-
         return false;
     }
 
-    /// <summary>
-    /// Restablece a cero los recursos del jugador y notifica al HUD.
-    /// </summary>
     public void ResetState()
     {
         keys = 0;
         diamonds = 0;
-        GameEvents.KeysChanged();
-        GameEvents.DiamondsChanged();
+        GameEvents.KeysChanged(ownerClientId);
+        GameEvents.DiamondsChanged(ownerClientId);
     }
 }

@@ -7,7 +7,11 @@ using UnityEngine;
 /// </summary>
 public class MapNetworkManager : NetworkBehaviour
 {
+    public static MapNetworkManager Instance { get; private set; } // Nuevo Singleton
+
     private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0);
+
+    public NetworkVariable<int> globalEnemiesKilled = new NetworkVariable<int>(0);
 
     [Header("Referencias")]
     public LevelGenerator levelGenerator;
@@ -19,6 +23,17 @@ public class MapNetworkManager : NetworkBehaviour
     /// </summary>
     public override void OnNetworkSpawn()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UpdateEnemiesKilledLocally(globalEnemiesKilled.Value);
+        }
+
+        globalEnemiesKilled.OnValueChanged += (oldVal, newVal) => {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.UpdateEnemiesKilledLocally(newVal);
+            }
+        };
         if (IsServer)
         {
             int randomSeed = Random.Range(1, 999999);
@@ -33,6 +48,14 @@ public class MapNetworkManager : NetworkBehaviour
             mapSeed.OnValueChanged += (oldVal, newVal) => {
                 if (newVal != 0) levelGenerator.StartGenerationWithSeed(newVal);
             };
+        }
+    }
+
+    public void AddKill()
+    {
+        if (IsServer)
+        {
+            globalEnemiesKilled.Value++;
         }
     }
 

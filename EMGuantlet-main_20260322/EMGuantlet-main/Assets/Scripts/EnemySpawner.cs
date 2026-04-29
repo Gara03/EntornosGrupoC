@@ -19,9 +19,13 @@ public class EnemySpawner : NetworkBehaviour
     /// <summary>
     /// Inicializa el temporizador de aparición de enemigos.
     /// </summary>
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        timer = spawnInterval;
+        if(IsServer)
+        {
+            timer = spawnInterval;
+        }
+        
     }
 
     /// <summary>
@@ -60,19 +64,20 @@ public class EnemySpawner : NetworkBehaviour
 
 
         GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
-        
-        //para que aparezca en los clientes
-        NetworkObject netObj = enemy.GetComponent<NetworkObject>();
 
+        //esto lo dejamos para debug
+        UniqueEntity uniqueEntity = enemy.GetComponent<UniqueEntity>();
+        if (uniqueEntity != null)
+        {
+            uniqueEntity.RegenerateIdOnSpawn();
+        }
+            
+        //para que aparezca en los clientes
         var networkObject = enemy.GetComponent<Unity.Netcode.NetworkObject>();
         if (networkObject != null && !networkObject.IsSpawned)
         {
             networkObject.Spawn();
         }
-
-        //esto lo dejamos para debug
-        UniqueEntity uniqueEntity = enemy.GetComponent<UniqueEntity>();
-        if (uniqueEntity != null)
-            uniqueEntity.RegenerateIdOnSpawn();
+       
     }
 }

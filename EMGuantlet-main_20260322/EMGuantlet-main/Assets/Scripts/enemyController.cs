@@ -73,11 +73,6 @@ public abstract class EnemyController : CharController
     public override void Die()
     {
         base.Die();
-
-        if (GameManager.Instance != null)
-            GameManager.Instance.AddEnemyKill();
-
-        spawnDrops();
     }
 
     /// <summary>
@@ -87,6 +82,12 @@ public abstract class EnemyController : CharController
     {
         if (IsServer && health <= 0)
         {
+            if (MapNetworkManager.Instance != null)
+            {
+                MapNetworkManager.Instance.AddKill();
+                Debug.Log("[Servidor] Enemigo destruido, sumando baja global.");
+            }
+
             spawnDrops();
 
             GetComponent<NetworkObject>().Despawn();

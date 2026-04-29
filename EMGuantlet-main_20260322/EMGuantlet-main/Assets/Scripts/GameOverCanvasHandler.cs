@@ -13,6 +13,12 @@ public class GameOverCanvasHandler : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        UnityEngine.EventSystems.EventSystem[] eventSystems = FindObjectsByType<UnityEngine.EventSystems.EventSystem>(FindObjectsSortMode.None);
+        if (eventSystems.Length > 1)
+        {
+            Destroy(eventSystems[eventSystems.Length - 1].gameObject);
+        }
+
         displayGameStats();
     }
 

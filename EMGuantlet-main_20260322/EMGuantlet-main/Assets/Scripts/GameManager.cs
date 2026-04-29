@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 public static class SceneNames
@@ -12,9 +13,8 @@ public static class SceneNames
 
 public class GameManager : MonoBehaviour
 {
-
     [SerializeField] private float delayBeforeScene = 0.5f;
-    private PlayerGameState playerState;
+    private System.Collections.Generic.Dictionary<string, PlayerGameState> playerStates = new System.Collections.Generic.Dictionary<string, PlayerGameState>();
 
     public static GameManager Instance { get; private set; }
 
@@ -40,7 +40,6 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        playerState = new PlayerGameState("PLAYER_1");
         SceneManager.sceneUnloaded += onSceneUnloaded;
     }
 
@@ -75,17 +74,20 @@ public class GameManager : MonoBehaviour
     {
         LocalPlayerController = player;
         LocalPlayerEntity = entity;
-        SetPlayerData(entity);
+        SetPlayerData(entity, player.OwnerClientId);
         GameEvents.LocalPlayerRegistered(player);
     }
 
     /// <summary>
     /// Inicializa el estado del jugador con el identificador de su entidad.
     /// </summary>
-    public void SetPlayerData(UniqueEntity playerEntity)
+    public void SetPlayerData(UniqueEntity playerEntity, ulong clientId)
     {
         if (playerEntity == null || string.IsNullOrEmpty(playerEntity.EntityId)) return;
-        playerState = new PlayerGameState(playerEntity.EntityId);
+        if (!playerStates.ContainsKey(playerEntity.EntityId))
+        {
+            playerStates[playerEntity.EntityId] = new PlayerGameState(playerEntity.EntityId, clientId);
+        }
     }
 
     /// <summary>
@@ -93,16 +95,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ResetGameData()
     {
-        playerState?.ResetState();
+        playerStates.Clear();
         EnemiesKilled = 0;
     }
 
     /// <summary>
-    /// Incrementa el contador global de enemigos eliminados.
+    /// Actualiza el contador global de enemigos eliminados desde el servidor.
     /// </summary>
-    public void AddEnemyKill()
+    public void UpdateEnemiesKilledLocally(int totalKills)
     {
-        EnemiesKilled++;
+        EnemiesKilled = totalKills;
         GameEvents.EnemyKilled(EnemiesKilled);
     }
 
@@ -111,7 +113,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public int GetKeys()
     {
-        return playerState?.Keys ?? 0;
+        if (LocalPlayerEntity != null && playerStates.TryGetValue(LocalPlayerEntity.EntityId, out PlayerGameState state))
+            return state.Keys;
+        return 0;
     }
 
     /// <summary>
@@ -119,7 +123,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public int GetDiamonds()
     {
-        return playerState?.Diamonds ?? 0;
+        if (LocalPlayerEntity != null && playerStates.TryGetValue(LocalPlayerEntity.EntityId, out PlayerGameState state))
+            return state.Diamonds;
+        return 0;
     }
 
     /// <summary>
@@ -127,9 +133,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool TryAddKey(string playerEntityId, string keyEntityId)
     {
-        if (playerState == null) return false;
-        playerState.AddKey();
-        return true;
+        if (playerStates.TryGetValue(playerEntityId, out PlayerGameState state))
+        {
+            state.AddKey();
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -137,9 +146,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool TryAddDiamond(string playerEntityId, string diamondEntityId)
     {
-        if (playerState == null) return false;
-        playerState.AddDiamond();
-        return true;
+        if (playerStates.TryGetValue(playerEntityId, out PlayerGameState state))
+        {
+            state.AddDiamond();
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -147,8 +159,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool TryOpenDoor(string playerEntityId, string doorEntityId)
     {
-        if (playerState == null) return false;
-        return playerState.UseKey();
+        if (playerStates.TryGetValue(playerEntityId, out PlayerGameState state))
+        {
+            state.UseKey();
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -156,9 +172,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool TryTriggerVictory(string playerEntityId, string chestEntityId)
     {
-        if (playerState == null) return false;
-        victoryAchieved();
-        return true;
+        if (playerStates.TryGetValue(playerEntityId, out PlayerGameState state))
+        {
+            victoryAchieved();
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -206,7 +225,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void TriggerGameOver()
     {
-        Debug.Log($"[GameManager] Game Over. Keys: {GetKeys()}, Diamonds: {GetDiamonds()}, Enemies: {EnemiesKilled}");
+        Debug.Log($"[GameManager] Procesando muerte de jugador local.");
+
         Invoke(nameof(loadDeadScene), delayBeforeScene);
     }
 
@@ -226,7 +246,23 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void loadDeadScene()
     {
-        SceneManager.LoadScene(SceneNames.DeadScene);
+        if (Unity.Netcode.NetworkManager.Singleton.IsServer)
+        {
+            // PARA EL HOST: Carga aditiva para no cerrar el servidor
+            SceneManager.LoadScene(SceneNames.DeadScene, LoadSceneMode.Additive);
+
+            // Desactiva la cámara de juego para que se vea la de DeadScene
+            if (LocalPlayerController != null)
+            {
+                // Puedes buscar la cámara principal y apagarla
+                Camera.main.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            // PARA EL CLIENTE: Carga normal, se desconecta y se va a su pantalla
+            SceneManager.LoadScene(SceneNames.DeadScene);
+        }
     }
 
     /// <summary>
@@ -249,9 +285,9 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Registra en consola el estado del juego cuando el jugador muere.
     /// </summary>
-    private void onPlayerDeath()
+    private void onPlayerDeath(ulong clientId)
     {
-        Debug.Log($"[GameManager] Jugador muerto. Keys: {GetKeys()}, Diamonds: {GetDiamonds()}, Enemies: {EnemiesKilled}");
+        Debug.Log($"[GameManager] Jugador {clientId} muerto. Keys: {GetKeys()}, Diamonds: {GetDiamonds()}, Enemies: {EnemiesKilled}");
     }
 }
 
