@@ -216,16 +216,16 @@ public class PlayerController : CharController
     /// </summary>
     protected override void LoadStats()
     {
-        // 1. SOLO el dueño lee del GameManager local. El servidor respeta lo que le llega por red.
+        // solo el dueño lee
         if (IsOwner && GameManager.Instance != null && GameManager.Instance.SelectedCharacterStats != null)
         {
             stats = GameManager.Instance.SelectedCharacterStats;
         }
 
-        // 2. Cargamos la vida y velocidad base (heredadas)
+        // cargamos vida y velocidad base
         base.LoadStats();
 
-        // 3. Cargamos el daño y cooldown
+        //cargamos daño y cooldown
         PlayerStats playerStats = stats as PlayerStats;
         if (playerStats != null)
         {
@@ -321,7 +321,7 @@ public class PlayerController : CharController
     [Rpc(SendTo.Server)]
     private void NotifyAttackServerRpc()
     {
-        // ESTO ES VITAL: El servidor registra que estás atacando
+        // el servidor registra que esta atacando
         IsAttacking = true;
         Invoke(nameof(endAttack), attackCooldown);
 

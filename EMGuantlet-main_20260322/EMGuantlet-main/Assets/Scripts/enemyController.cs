@@ -33,13 +33,12 @@ public abstract class EnemyController : CharController
         }
         else
         {
-            // El enemigo ataca. Guardamos la dirección del empuje
+            //el enemigo ataca. guardamos la direccion del empuje
             Vector2 knockbackDir = (player.transform.position - transform.position).normalized;
 
-            // LOG CHIVATO: Esto aparecerá en la consola del Host si el enemigo te toca
-            Debug.Log($"[Servidor] El enemigo intenta pegar al jugador. Daño base: {damageToPlayer}");
+            //Debug.Log($"[Servidor] El enemigo intenta pegar al jugador. Daño base: {damageToPlayer}");
 
-            // Enviamos la orden de daño al cliente
+            //orden de daño al cliente
             player.ReceiveDamageRpc(damageToPlayer, knockbackDir);
         }
     }

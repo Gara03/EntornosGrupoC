@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class MapNetworkManager : NetworkBehaviour
 {
-    public static MapNetworkManager Instance { get; private set; } // Nuevo Singleton
+    public static MapNetworkManager Instance { get; private set; } //nuevo singleton
 
     private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0);
 

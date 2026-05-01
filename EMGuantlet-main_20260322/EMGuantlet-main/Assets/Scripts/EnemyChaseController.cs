@@ -76,22 +76,20 @@ public class EnemyChaseController : EnemyController
         float minDistance = chaseRange;
         Transform closestPlayer = null;
 
-        // 1. En multijugador, es mejor preguntarle al servidor quién está conectado
         if (Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsServer)
         {
             foreach (var client in Unity.Netcode.NetworkManager.Singleton.ConnectedClientsList)
             {
-                // Comprobamos que el cliente tiene un personaje instanciado
+                //comprobamos que el cliente tiene un personaje instanciado
                 if (client.PlayerObject != null)
                 {
                     PlayerController pController = client.PlayerObject.GetComponent<PlayerController>();
 
-                    // 2. Filtro de seguridad usando IsDead
                     if (pController != null && !pController.IsDead)
                     {
                         float distanceToPlayer = Vector2.Distance(transform.position, pController.transform.position);
 
-                        // 3. Comprobamos la distancia
+                        // comprobamos la distancia
                         if (distanceToPlayer < minDistance)
                         {
                             minDistance = distanceToPlayer;
@@ -102,7 +100,6 @@ public class EnemyChaseController : EnemyController
             }
         }
 
-        // 4. Decidimos qué hacer
         if (closestPlayer != null)
         {
             playerTransform = closestPlayer;
