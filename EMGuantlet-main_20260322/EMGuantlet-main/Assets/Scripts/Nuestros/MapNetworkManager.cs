@@ -21,6 +21,18 @@ public class MapNetworkManager : NetworkBehaviour
     /// Si se trata del Host, genera una semilla de forma aleatoria para generar el mapa y espera a que carguen todos los jugadores
     /// Si se trata de los clientes, se genera el mapa a partir de la semilla del Host 
     /// </summary>
+    /// 
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
     public override void OnNetworkSpawn()
     {
         if (GameManager.Instance != null)
