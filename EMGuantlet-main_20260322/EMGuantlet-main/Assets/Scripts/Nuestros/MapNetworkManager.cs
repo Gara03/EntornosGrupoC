@@ -3,15 +3,15 @@ using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
-/// .
+/// Clase encargada de generar y transmitir la semilla del mapa al resto de jugadores, asi como su spawn cuando estan preparados
 /// </summary>
 public class MapNetworkManager : NetworkBehaviour
 {
-    public static MapNetworkManager Instance { get; private set; } //nuevo singleton
+    public static MapNetworkManager Instance { get; private set; } // Nuevo singleton
 
-    private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0);
+    private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0); // NetworkVariable para la semilla del mapa (se mandara la semilla a todos los clientes)
 
-    public NetworkVariable<int> globalEnemiesKilled = new NetworkVariable<int>(0);
+    public NetworkVariable<int> globalEnemiesKilled = new NetworkVariable<int>(0); // NetworkVariable para 
 
     [Header("Referencias")]
     public LevelGenerator levelGenerator;
@@ -63,6 +63,9 @@ public class MapNetworkManager : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que se encarga de añadir una kill.
+    /// </summary>
     public void AddKill()
     {
         if (IsServer)

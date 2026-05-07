@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 [System.Serializable]
@@ -285,7 +287,6 @@ public class LevelGenerator : MonoBehaviour
     {
         return new Vector3(-2.5f, -2.5f, -0.1f);
     }
-
 
 
     ///////// FUNCIONES QUE SE USABAN PARA EL LOCAL (SIN BORRAR)

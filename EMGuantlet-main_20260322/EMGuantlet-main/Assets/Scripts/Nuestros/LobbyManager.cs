@@ -2,6 +2,9 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Clase encargada de gestionar el sistema de conexion/desconexion de clientes y host en el lobby
+/// </summary>
 public class LobbyManager : MonoBehaviour
 {
     [Header("UI Button")]

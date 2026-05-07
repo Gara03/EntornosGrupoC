@@ -14,6 +14,13 @@ public class PlayerController : CharController
         NetworkVariableWritePermission.Owner
     );
 
+    // Variable Network para sincronizar si el jugador esta andando o parado
+    private NetworkVariable<float> playerAnimationSpeed = new NetworkVariable<float>(
+        0f,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner
+    );
+
     protected int damageToEnemy;
     protected float attackCooldown;
 
@@ -39,7 +46,7 @@ public class PlayerController : CharController
     }
 
     /// <summary>
-    /// [NUEVO] Se ejecuta en cuanto el jugador "nace" en la red.
+    /// Se ejecuta en cuanto el jugador se conecta.
     /// </summary>
     public override void OnNetworkSpawn()
     {
@@ -149,17 +156,27 @@ public class PlayerController : CharController
     /// </summary>
     protected override void Update()
     {
-        if (!IsOwner || !isReadyForMultiplayer) return;
+        if (!isReadyForMultiplayer) return;
 
-        animator.SetFloat("speed", movement.sqrMagnitude);
-
-        if (movement.sqrMagnitude > 0.01f)
+        // Logica del owner
+        if (IsOwner)
         {
-            float angle = Mathf.Atan2(movement.y, movement.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+            playerAnimationSpeed.Value = movement.sqrMagnitude;
+
+            if (movement.sqrMagnitude > 0.01f)
+            {
+                float angle = Mathf.Atan2(movement.y, movement.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+            }
+
+            checkDeath();
         }
 
-        checkDeath();
+        // Si no es el dueño, el resto pueden ver su animacion
+        if (animator != null)
+        {
+            animator.SetFloat("speed", playerAnimationSpeed.Value);
+        }
     }
 
     /// <summary>
@@ -310,6 +327,7 @@ public class PlayerController : CharController
         controls.Player.Attack.performed -= onAttack;
         controls.Disable();
     }
+
     [Rpc(SendTo.Owner)]
     public void ReceiveDamageRpc(int amount, Vector2 knockbackDir)
     {

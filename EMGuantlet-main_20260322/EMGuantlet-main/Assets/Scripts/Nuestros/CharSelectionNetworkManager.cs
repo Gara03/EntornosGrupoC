@@ -2,8 +2,12 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
 
+// Colores de los personajes
 public enum CharacterColor { Red, Green, Yellow, Purple }
 
+/// <summary>
+/// Clase encargada de la seleccion de personajes y sincronizacion entre los clientes
+/// </summary>
 public class CharSelectionNetworkManager : NetworkBehaviour
 {
     private Dictionary<ulong, CharacterColor> playerSelections = new Dictionary<ulong, CharacterColor>();
