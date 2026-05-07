@@ -221,9 +221,11 @@ public class LevelGenerator : MonoBehaviour
             if (isRingEnabled(cfg, i))
             {
                 outermostWallIndex = i;
-                break;
+                break; 
             }
         }
+
+        Debug.Log($"[LevelGenerator] El muro exterior dinámico detectado es: {outermostWallIndex}");
 
         for (int i = 0; i < castleRings.Length; i++)
         {
@@ -233,11 +235,7 @@ public class LevelGenerator : MonoBehaviour
             bool isLastRing = i == castleRings.Length - 1;
             bool isEnabled = isLastRing || isRingEnabled(cfg, i);
 
-            if (!isEnabled)
-            {
-                Debug.Log($"[LevelGenerator] Anillo '{ring.name}' desactivado por MapConfig");
-                continue;
-            }
+            if (!isEnabled) continue;
 
             int ringWidth = getRingWidth(cfg, i);
             GameObject[] spawners = buildSpawnersArray(cfg, i);
@@ -253,7 +251,7 @@ public class LevelGenerator : MonoBehaviour
                 spawners,
                 ring.wallPrefab,
                 ring.cornerPrefab,
-                isLastRing ? null : openDoorToPass,
+                openDoorToPass, 
                 isLastRing ? null : ring.closedDoor,
                 ring.decorativeElement,
                 decorativePercentage
