@@ -5274,7 +5274,7 @@ MonoBehaviour:
       weight: 4
     wallPrefab: {fileID: 3081265137237362936, guid: 74a064d10b6df274095f36ab24c246a2, type: 3}
     cornerPrefab: {fileID: 8487727646964756557, guid: 7f4942f057ed9414192d818ada47769d, type: 3}
-    openDoor: {fileID: 4853005277169393996, guid: e7f117b321e666b41bf03a437a79e608, type: 3}
+    openDoor: {fileID: 4471341690785005475, guid: 103a5d97f14da9c46a52c57dd96a3c36, type: 3}
     closedDoor: {fileID: 4853005277169393996, guid: e7f117b321e666b41bf03a437a79e608, type: 3}
     decorativeElement: {fileID: 6359469095843694024, guid: 7acafee1ec0459d44a10e38f86037b68, type: 3}
     decorativeElementPercentage: 0.05
@@ -5294,7 +5294,7 @@ MonoBehaviour:
       weight: 4
     wallPrefab: {fileID: 3081265137237362936, guid: 74a064d10b6df274095f36ab24c246a2, type: 3}
     cornerPrefab: {fileID: 8487727646964756557, guid: 7f4942f057ed9414192d818ada47769d, type: 3}
-    openDoor: {fileID: 4853005277169393996, guid: e7f117b321e666b41bf03a437a79e608, type: 3}
+    openDoor: {fileID: 4471341690785005475, guid: 103a5d97f14da9c46a52c57dd96a3c36, type: 3}
     closedDoor: {fileID: 4853005277169393996, guid: e7f117b321e666b41bf03a437a79e608, type: 3}
     decorativeElement: {fileID: 6359469095843694024, guid: 7acafee1ec0459d44a10e38f86037b68, type: 3}
     decorativeElementPercentage: 0.05

@@ -7,6 +7,9 @@ public class PlayerController : CharController
     private PlayerControls controls;
     private bool isReadyForMultiplayer = false;
 
+    public NetworkVariable<int> KeysCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> DiamondsCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
     // Variable Network
     private NetworkVariable<int> selectedCharacterIndex = new NetworkVariable<int>(
         -1,
@@ -76,6 +79,9 @@ public class PlayerController : CharController
         {
             ApplyVisuals(selectedCharacterIndex.Value);
         }
+
+        KeysCount.OnValueChanged += (oldVal, newVal) => GameEvents.KeysChanged(OwnerClientId);
+        DiamondsCount.OnValueChanged += (oldVal, newVal) => GameEvents.DiamondsChanged(OwnerClientId);
     }
 
     /// <summary>

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9105605446648030801}
   - component: {fileID: 8649414961764955326}
   - component: {fileID: 6080630642751187561}
+  - component: {fileID: 207547154276774214}
   - component: {fileID: -153897052423752799}
   - component: {fileID: -4273565035056380485}
   - component: {fileID: 9202092264590209858}
@@ -124,7 +125,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -150,6 +151,31 @@ PolygonCollider2D:
       - {x: 0.1484375, y: 0.0234375}
       - {x: 0.0078125, y: 0.125}
   m_UseDelaunayMesh: 0
+--- !u!114 &207547154276774214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7706303746557854305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3243222502
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &-153897052423752799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,9 +185,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7706303746557854305}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ab076548f0ee4e41a358aac80b47353, type: 3}
+  m_Script: {fileID: 11500000, guid: ccbbb8dd3a83f2a46abcf08f7cec241b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KeyCollection
+  ShowTopMostFoldoutHeaderGroup: 1
+  collectibleType: 1
   playerTag: Player
 --- !u!50 &-4273565035056380485
 Rigidbody2D:

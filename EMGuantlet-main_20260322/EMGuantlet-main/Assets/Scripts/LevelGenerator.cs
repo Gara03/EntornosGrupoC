@@ -92,6 +92,72 @@ public class LevelGenerator : MonoBehaviour
     {
         generateTreasureRoom();
         generateRings();
+        clearSpawnArea();
+        clearDoorAreas();
+    }
+
+    private void clearSpawnArea()
+    {
+        Vector3 basePos = GetPlayerSpawnPosition(0);
+        Vector3 clusterCenter = basePos + new Vector3(0.75f, 0.75f, 0f);
+
+
+        Collider2D[] obstacles = Physics2D.OverlapCircleAll(clusterCenter, 2.0f);
+
+        foreach (Collider2D col in obstacles)
+        {
+            if (col.GetComponent<Tilemap>() != null) continue;
+
+            UniqueEntity entity = col.GetComponent<UniqueEntity>();
+            if (entity != null)
+            {
+                if (entity.Type != EntityType.Pickup_Key && entity.Type != EntityType.Pickup_Diamond)
+                    continue;
+            }
+
+            string objName = col.gameObject.name.ToLower();
+            if (objName.Contains("wall") || objName.Contains("corner") || objName.Contains("door") || objName.Contains("puerta"))
+            {
+                continue;
+            }
+
+            Destroy(col.gameObject);
+        }
+
+    }
+
+    private void clearDoorAreas()
+    {
+        // 1. Buscamos todos los objetos del mapa
+        GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+        int clearedDoors = 0;
+
+        foreach (GameObject obj in allObjects)
+        {
+            string objName = obj.name.ToLower();
+
+            // 2. Identificamos si el objeto es una puerta
+            if (objName.Contains("door") || objName.Contains("puerta"))
+            {
+                // 3. Limpiamos un radio de 1.5 metros (suficiente para pasar) alrededor de la puerta
+                Collider2D[] obstacles = Physics2D.OverlapCircleAll(obj.transform.position, 1.5f);
+
+                foreach (Collider2D col in obstacles)
+                {
+                    if (col.GetComponent<Tilemap>() != null) continue;
+
+                    string colName = col.gameObject.name.ToLower();
+                    // Protegemos estructuras vitales
+                    if (colName.Contains("wall") || colName.Contains("corner") || colName.Contains("door") || colName.Contains("puerta")) continue;
+
+                    UniqueEntity entity = col.GetComponent<UniqueEntity>();
+                    if (entity != null && (entity.Type == EntityType.Pickup_Key || entity.Type == EntityType.Pickup_Diamond)) continue;
+
+                    Destroy(col.gameObject);
+                }
+                clearedDoors++;
+            }
+        }
     }
 
     /// <summary>
@@ -114,7 +180,7 @@ public class LevelGenerator : MonoBehaviour
             null,
             treasureRoomWallPrefab,
             treasureRoomCornerPrefab,
-            treasureRoomOpenDoor,
+            null,
             treasureRoomClosedDoor
         );
 
@@ -149,6 +215,16 @@ public class LevelGenerator : MonoBehaviour
         int roomSize = cfg != null ? cfg.treasureRoomSize : 7;
         Vector2Int innerSize = new Vector2Int(roomSize, roomSize);
 
+        int outermostWallIndex = -1;
+        for (int i = castleRings.Length - 2; i >= 0; i--)
+        {
+            if (isRingEnabled(cfg, i))
+            {
+                outermostWallIndex = i;
+                break;
+            }
+        }
+
         for (int i = 0; i < castleRings.Length; i++)
         {
             RingSettings ring = castleRings[i];
@@ -167,6 +243,8 @@ public class LevelGenerator : MonoBehaviour
             GameObject[] spawners = buildSpawnersArray(cfg, i);
             float decorativePercentage = getDecorativePercentage(cfg, i, ring);
 
+            GameObject openDoorToPass = (i == outermostWallIndex) ? ring.openDoor : null;
+
             tilemapFiller.BuildRectangularRingRoom(
                 tilemap,
                 innerSize,
@@ -175,7 +253,7 @@ public class LevelGenerator : MonoBehaviour
                 spawners,
                 ring.wallPrefab,
                 ring.cornerPrefab,
-                isLastRing ? null : ring.openDoor,
+                isLastRing ? null : openDoorToPass,
                 isLastRing ? null : ring.closedDoor,
                 ring.decorativeElement,
                 decorativePercentage
@@ -283,9 +361,46 @@ public class LevelGenerator : MonoBehaviour
     /// Calcula y prepara la posición de spawn del jugador para aplicarla al comenzar.
     ///  ¡¡¡¡¡¡ SE TIENE QUE CAMBIAR PARA EL RESTO DE CONFIGURACIONES DE MAPAS !!!!!!
     /// </summary>
-    public Vector3 GetPlayerSpawnPosition()
+    public Vector3 GetPlayerSpawnPosition(int playerIndex = 0)
     {
-        return new Vector3(-2.5f, -2.5f, -0.1f);
+        MapConfig cfg = activeConfig;
+        int totalWidth = cfg != null ? cfg.treasureRoomSize : 7;
+        int lastRingWidth = 8; // Grosor por defecto
+
+        if (castleRings != null)
+        {
+            for (int i = 0; i < castleRings.Length; i++)
+            {
+                bool isLastRing = i == castleRings.Length - 1;
+                bool isEnabled = isLastRing || isRingEnabled(cfg, i);
+
+                if (isEnabled)
+                {
+                    lastRingWidth = getRingWidth(cfg, i);
+                    totalWidth += 2 * lastRingWidth;
+                }
+            }
+        }
+
+        // Esquina inferior izquierda absoluta del mapa
+        float xMin = -totalWidth / 2f;
+        float yMin = -totalWidth / 2f;
+
+        // El margen se ajusta proporcionalmente al ancho del pasillo final.
+        // Si el anillo mide 4, el margen es ~1.5, dejando a los jugadores perfectamente en el centro del pasillo.
+        float margin = Mathf.Max(1.5f, lastRingWidth * 0.35f);
+
+        Vector3 basePos = new Vector3(xMin + margin, yMin + margin, -0.1f);
+
+        Vector3[] clusterOffsets = new Vector3[]
+        {
+            new Vector3(0, 0, 0),     
+            new Vector3(1.5f, 0, 0),   
+            new Vector3(0, 1.5f, 0),   
+            new Vector3(1.5f, 1.5f, 0)  
+        };
+
+        return basePos + clusterOffsets[playerIndex % clusterOffsets.Length];
     }
 
 
@@ -310,84 +425,6 @@ public class LevelGenerator : MonoBehaviour
         player.gameObject.SetActive(true);
         player.transform.position = spawnPos;
         applySelectedCharacter(player);
-    }
-
-    /// <summary>
-    /// Calcula una posición de spawn válida dentro del penúltimo anillo activo.
-    /// </summary>
-    private bool tryCalculateSpawnPos(out Vector3 spawnPos)
-    {
-        spawnPos = Vector3.zero;
-
-        if (castleRings == null || castleRings.Length == 0)
-            return false;
-
-        MapConfig cfg = activeConfig;
-        int roomSize = cfg != null ? cfg.treasureRoomSize : 7;
-        int forestIndex = castleRings.Length - 1;
-
-        System.Collections.Generic.List<int> activeInnerRingIndices = new System.Collections.Generic.List<int>();
-        for (int i = 0; i < forestIndex; i++)
-        {
-            if (castleRings[i] == null) continue;
-            if (!isRingEnabled(cfg, i)) continue;
-            activeInnerRingIndices.Add(i);
-        }
-
-        if (activeInnerRingIndices.Count == 0)
-        {
-            int forestWidth = getRingWidth(cfg, forestIndex);
-            if (forestWidth <= 0) forestWidth = 4;
-
-            Vector2Int outerSizeFallback = new Vector2Int(
-                roomSize + 2 * forestWidth,
-                roomSize + 2 * forestWidth
-            );
-
-            int xMinFallback = Mathf.FloorToInt(-outerSizeFallback.x / 2f);
-            int yMinFallback = Mathf.FloorToInt(-outerSizeFallback.y / 2f);
-            int marginFallback = Mathf.Clamp(2, 1, Mathf.Max(1, forestWidth - 1));
-
-            spawnPos = new Vector3(
-                xMinFallback + marginFallback + 0.5f,
-                yMinFallback + marginFallback + 0.5f,
-                -0.1f
-            );
-
-            return true;
-        }
-
-        int penultimateIndex = activeInnerRingIndices[activeInnerRingIndices.Count - 1];
-        int penultimateWidth = getRingWidth(cfg, penultimateIndex);
-
-        Vector2Int sizeBeforePenultimate = new Vector2Int(roomSize, roomSize);
-        for (int k = 0; k < activeInnerRingIndices.Count - 1; k++)
-        {
-            int idx = activeInnerRingIndices[k];
-            int w = getRingWidth(cfg, idx);
-
-            sizeBeforePenultimate = new Vector2Int(
-                sizeBeforePenultimate.x + 2 * w,
-                sizeBeforePenultimate.y + 2 * w
-            );
-        }
-
-        Vector2Int penultimateOuterSize = new Vector2Int(
-            sizeBeforePenultimate.x + 2 * penultimateWidth,
-            sizeBeforePenultimate.y + 2 * penultimateWidth
-        );
-
-        int xMin = Mathf.FloorToInt(-penultimateOuterSize.x / 2f);
-        int yMin = Mathf.FloorToInt(-penultimateOuterSize.y / 2f);
-        int margin = Mathf.Clamp(2, 1, Mathf.Max(1, penultimateWidth - 1));
-
-        spawnPos = new Vector3(
-            xMin + margin + 0.5f,
-            yMin + margin + 0.5f,
-            -0.1f
-        );
-
-        return true;
     }
 
     /// <summary>

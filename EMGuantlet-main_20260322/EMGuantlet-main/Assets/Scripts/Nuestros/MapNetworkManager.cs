@@ -105,7 +105,7 @@ public class MapNetworkManager : NetworkBehaviour
         int i = 0;
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
-            Vector3 spawnPos = basePos + new Vector3(i * 1.5f, 0, 0);
+            Vector3 spawnPos = levelGenerator.GetPlayerSpawnPosition(i);
 
             GameObject playerObj = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
 

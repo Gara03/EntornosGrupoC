@@ -113,8 +113,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public int GetKeys()
     {
-        if (LocalPlayerEntity != null && playerStates.TryGetValue(LocalPlayerEntity.EntityId, out PlayerGameState state))
-            return state.Keys;
+        if (LocalPlayerController != null)
+            return LocalPlayerController.KeysCount.Value;
+
         return 0;
     }
 
@@ -123,33 +124,36 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public int GetDiamonds()
     {
-        if (LocalPlayerEntity != null && playerStates.TryGetValue(LocalPlayerEntity.EntityId, out PlayerGameState state))
-            return state.Diamonds;
+        if (LocalPlayerController != null)
+            return LocalPlayerController.DiamondsCount.Value;
+            
         return 0;
     }
 
-    /// <summary>
-    /// Intenta añadir una llave al inventario del jugador actual.
-    /// </summary>
-    public bool TryAddKey(string playerEntityId, string keyEntityId)
+    public bool TryAddKey(ulong clientId, string keyEntityId)
     {
-        if (playerStates.TryGetValue(playerEntityId, out PlayerGameState state))
+        PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        foreach (var p in players)
         {
-            state.AddKey();
-            return true;
+            if (p.OwnerClientId == clientId)
+            {
+                p.KeysCount.Value++;
+                return true;
+            }
         }
         return false;
     }
 
-    /// <summary>
-    /// Intenta añadir un diamante al inventario del jugador actual.
-    /// </summary>
-    public bool TryAddDiamond(string playerEntityId, string diamondEntityId)
+    public bool TryAddDiamond(ulong clientId, string diamondEntityId)
     {
-        if (playerStates.TryGetValue(playerEntityId, out PlayerGameState state))
+        PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        foreach (var p in players)
         {
-            state.AddDiamond();
-            return true;
+            if (p.OwnerClientId == clientId)
+            {
+                p.DiamondsCount.Value++;
+                return true;
+            }
         }
         return false;
     }

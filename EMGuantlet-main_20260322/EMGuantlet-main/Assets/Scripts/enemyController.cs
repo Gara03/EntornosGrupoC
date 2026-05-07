@@ -132,6 +132,13 @@ public abstract class EnemyController : CharController
                     new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0f) * 0.5f;
 
                 GameObject drop = Instantiate(dropPrefab, dropPosition, Quaternion.identity);
+
+                var netObj = drop.GetComponent<Unity.Netcode.NetworkObject>();
+                if (netObj != null && !netObj.IsSpawned)
+                {
+                    netObj.Spawn();
+                }
+
                 UniqueEntity uniqueEntity = drop.GetComponent<UniqueEntity>();
                 if (uniqueEntity != null) uniqueEntity.RegenerateIdOnSpawn();
             }

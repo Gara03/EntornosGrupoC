@@ -49,7 +49,7 @@ MonoBehaviour:
     ringWidth: 6
     dragonSpawnerCount: 0
     goatSpawnerCount: 0
-    decorativePercentage: 0.75
+    decorativePercentage: 0.1
   dragonDropConfig:
     keyDropChance: 0.5
     minDiamondDrops: 6
