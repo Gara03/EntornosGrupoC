@@ -80,8 +80,21 @@ public class PlayerController : CharController
             ApplyVisuals(selectedCharacterIndex.Value);
         }
 
-        KeysCount.OnValueChanged += (oldVal, newVal) => GameEvents.KeysChanged(OwnerClientId);
-        DiamondsCount.OnValueChanged += (oldVal, newVal) => GameEvents.DiamondsChanged(OwnerClientId);
+        //KeysCount.OnValueChanged += (oldVal, newVal) => GameEvents.KeysChanged(OwnerClientId);
+        //DiamondsCount.OnValueChanged += (oldVal, newVal) => GameEvents.DiamondsChanged(OwnerClientId);
+
+        KeysCount.OnValueChanged += (oldVal, newVal) => {
+            if (GameManager.Instance != null) GameManager.Instance.RecalculateGlobals();
+            GameEvents.KeysChanged(OwnerClientId);
+        };
+
+        DiamondsCount.OnValueChanged += (oldVal, newVal) => {
+            if (GameManager.Instance != null) GameManager.Instance.RecalculateGlobals();
+            GameEvents.DiamondsChanged(OwnerClientId);
+        };
+
+        // Forzamos un cálculo inicial nada más nacer
+        if (GameManager.Instance != null) GameManager.Instance.RecalculateGlobals();
     }
 
     /// <summary>
@@ -205,10 +218,9 @@ public class PlayerController : CharController
     [Rpc(SendTo.Server)]
     private void NotifyDeathServerRpc()
     {
-        if (NetworkObject != null && NetworkObject.IsSpawned)
-        {
-            NetworkObject.Despawn(true); // Despawnea y destruye el objeto para los demás
-        }
+        // Simplemente lo volvemos intocable en el servidor
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        foreach (Collider2D col in colliders) col.enabled = false;
     }
 
     /// <summary>
@@ -350,15 +362,5 @@ public class PlayerController : CharController
         Invoke(nameof(endAttack), attackCooldown);
 
         PlayAttackAnimationRpc();
-    }
-
-    [Rpc(SendTo.Everyone)]
-    public void SyncVictoryStatsRpc(int totalKeys, int totalDiamonds, int totalEnemies)
-    {
-        GameManager.Instance.GlobalKeys = totalKeys;
-        GameManager.Instance.GlobalDiamonds = totalDiamonds;
-        GameManager.Instance.UpdateEnemiesKilledLocally(totalEnemies);
-
-        Debug.Log($"[Red] Estadísticas globales sincronizadas: K:{totalKeys} D:{totalDiamonds} E:{totalEnemies}");
     }
 }

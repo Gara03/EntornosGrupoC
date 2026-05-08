@@ -138,6 +138,8 @@ public class GameManager : MonoBehaviour
 
     public bool TryAddKey(ulong clientId, string keyEntityId)
     {
+        if (!Unity.Netcode.NetworkManager.Singleton.IsServer) return false;
+
         PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         foreach (var p in players)
         {
@@ -152,12 +154,15 @@ public class GameManager : MonoBehaviour
 
     public bool TryAddDiamond(ulong clientId, string diamondEntityId)
     {
+        if (!Unity.Netcode.NetworkManager.Singleton.IsServer) return false;
+
         PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         foreach (var p in players)
         {
             if (p.OwnerClientId == clientId)
             {
                 p.DiamondsCount.Value++;
+                //GlobalDiamonds++;
                 return true;
             }
         }
@@ -179,7 +184,7 @@ public class GameManager : MonoBehaviour
                 // Se comprueba si tiene la llave
                 if (p.KeysCount.Value > 0)
                 {
-                    p.KeysCount.Value--; 
+                    p.KeysCount.Value--;
                     return true;
                 }
                 else
@@ -213,13 +218,13 @@ public class GameManager : MonoBehaviour
         ResetGameData();
     }
 
+
     /// <summary>
     /// Inicia el flujo de fin de partida por muerte del jugador.
     /// </summary>
     public void TriggerGameOver()
     {
-        Debug.Log($"[GameManager] Procesando muerte de jugador local.");
-
+        Debug.Log("[GameManager] Derrota. Los datos ya están sincronizados en tiempo real.");
         Invoke(nameof(loadDeadScene), delayBeforeScene);
     }
 
@@ -265,40 +270,31 @@ public class GameManager : MonoBehaviour
     {
         if (Unity.Netcode.NetworkManager.Singleton.IsServer)
         {
-            // Se calculan las estadisticas
-            int sumKeys = 0;
-            int sumDiamonds = 0;
-
-            PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-
-            foreach (var p in allPlayers)
-            {
-                sumKeys += p.KeysCount.Value;
-                sumDiamonds += p.DiamondsCount.Value;
-            }
-
-            // 2. SINCRONIZAR: Enviamos los datos finales a los clientes mientras los objetos existen
-            if (LocalPlayerController != null)
-            {
-                LocalPlayerController.SyncVictoryStatsRpc(sumKeys, sumDiamonds, EnemiesKilled);
-            }
-
-            // 3. LIMPIEZA TOTAL DE JUGADORES: Borramos a todos sin excepción
-            foreach (var p in allPlayers)
-            {
-                if (p.NetworkObject != null && p.NetworkObject.IsSpawned)
-                {
-                    // Al no haber 'if' de exclusión, el ganador también es eliminado
-                    p.NetworkObject.Despawn(true);
-                }
-            }
-
-            // 4. LIMPIEZA DEL MAPA: Enemigos, puertas y el propio cofre
+            Debug.Log("[GameManager] Victoria. Limpiando mapa...");
             clearMapEntities();
         }
 
-        // Esperamos el tiempo de retardo antes de cambiar a la escena de créditos/victoria
         Invoke(nameof(loadVictoryScene), delayBeforeScene);
+    }
+
+    /// <summary>
+    /// Recalcula los totales leyendo las variables de red de todos los jugadores vivos.
+    /// Al ejecutarse tanto en Host como en Cliente, ¡los datos están siempre sincronizados!
+    /// </summary>
+    public void RecalculateGlobals()
+    {
+        int sumKeys = 0;
+        int sumDiamonds = 0;
+
+        PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        foreach (var p in allPlayers)
+        {
+            sumKeys += p.KeysCount.Value;
+            sumDiamonds += p.DiamondsCount.Value;
+        }
+
+        GlobalKeys = sumKeys;
+        GlobalDiamonds = sumDiamonds;
     }
 
     /// <summary>
