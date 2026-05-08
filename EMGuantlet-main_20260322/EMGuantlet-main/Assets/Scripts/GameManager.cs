@@ -161,13 +161,28 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Intenta abrir una puerta consumiendo una llave del jugador actual.
     /// </summary>
-    public bool TryOpenDoor(string playerEntityId, string doorEntityId)
+    public bool TryOpenDoor(ulong clientId, string doorEntityId)
     {
-        if (playerStates.TryGetValue(playerEntityId, out PlayerGameState state))
+        if (!Unity.Netcode.NetworkManager.Singleton.IsServer) return false;
+
+        // Se busca al jugador
+        if (Unity.Netcode.NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
         {
-            state.UseKey();
-            return true;
+            if (client.PlayerObject.TryGetComponent(out PlayerController p))
+            {
+                // Se comprueba si tiene la llave
+                if (p.KeysCount.Value > 0)
+                {
+                    p.KeysCount.Value--; 
+                    return true;
+                }
+                else
+                {
+                    Debug.Log($"[GameManager] El cliente {clientId} no tiene llaves para abrir la puerta {doorEntityId}.");
+                }
+            }
         }
+
         return false;
     }
 

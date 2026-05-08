@@ -83,6 +83,7 @@ public class LevelGenerator : MonoBehaviour
         Random.InitState(seed);
 
         generateLevel();
+
     }
 
     /// <summary>
@@ -94,41 +95,95 @@ public class LevelGenerator : MonoBehaviour
         generateRings();
         clearSpawnArea();
         clearDoorAreas();
+
+        // Si es el servidor, genera los objetos en red (el cofre)
+        if (Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsServer)
+        {
+            generateLevelObjects();
+        }
+        else // Si es el cliente, limpia los objetos duplicados
+        {
+            cleanupClientGhostObjects();
+        }
     }
 
+    /// <summary>
+    /// Genera el cofre.
+    /// </summary>
+    private void generateLevelObjects()
+    {
+        Vector3 center = new Vector3(0f, 0f, -0.1f);
+        if (treasurePrefab != null)
+        {
+            GameObject chest = Instantiate(treasurePrefab, center, Quaternion.identity);
+
+            var networkObject = chest.GetComponent<Unity.Netcode.NetworkObject>();
+            if (networkObject != null && !networkObject.IsSpawned)
+            {
+                networkObject.Spawn();
+            }
+
+            UniqueEntity uniqueEntity = chest.GetComponent<UniqueEntity>();
+            if (uniqueEntity != null) uniqueEntity.RegenerateIdOnSpawn();
+        }
+    }
+
+    /// <summary>
+    /// Limpia los objetos duplicados de los clientes.
+    /// </summary>
+    private void cleanupClientGhostObjects()
+    {
+        NetworkObject[] netObjs = FindObjectsByType<NetworkObject>(FindObjectsSortMode.None);
+        foreach (NetworkObject netObj in netObjs)
+        {
+            if (!netObj.IsSpawned)
+            {
+                Destroy(netObj.gameObject);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Limpia un radio cercano al spawn de personajes, salvo los elementos importantes.
+    /// </summary>
     private void clearSpawnArea()
     {
         Vector3 basePos = GetPlayerSpawnPosition(0);
         Vector3 clusterCenter = basePos + new Vector3(0.75f, 0.75f, 0f);
 
-
         Collider2D[] obstacles = Physics2D.OverlapCircleAll(clusterCenter, 2.0f);
 
         foreach (Collider2D col in obstacles)
         {
-            if (col.GetComponent<Tilemap>() != null) continue;
+            // Se ignora el suelo 
+            if (col.GetComponentInParent<Tilemap>() != null) continue;
 
-            UniqueEntity entity = col.GetComponent<UniqueEntity>();
+            UniqueEntity entity = col.GetComponentInParent<UniqueEntity>();
             if (entity != null)
             {
+                // Se salvan las entidades
                 if (entity.Type != EntityType.Pickup_Key && entity.Type != EntityType.Pickup_Diamond)
                     continue;
             }
 
-            string objName = col.gameObject.name.ToLower();
-            if (objName.Contains("wall") || objName.Contains("corner") || objName.Contains("door") || objName.Contains("puerta"))
+            // Se comprueban los objetos que no se pueden eliminar
+            string objName = col.transform.root.name.ToLower();
+            if (objName.Contains("wall") || objName.Contains("corner") || objName.Contains("door") ||
+                objName.Contains("puerta") || objName.Contains("chest") || objName.Contains("cofre") ||
+                objName.Contains("treasure") || objName.Contains("tesoro"))
             {
                 continue;
             }
 
             Destroy(col.gameObject);
         }
-
     }
 
+    /// <summary>
+    /// Limpia un radio cercano al spawn de puertas, salvo los elementos importantes.
+    /// </summary>
     private void clearDoorAreas()
     {
-        // 1. Buscamos todos los objetos del mapa
         GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
         int clearedDoors = 0;
 
@@ -136,22 +191,24 @@ public class LevelGenerator : MonoBehaviour
         {
             string objName = obj.name.ToLower();
 
-            // 2. Identificamos si el objeto es una puerta
             if (objName.Contains("door") || objName.Contains("puerta"))
             {
-                // 3. Limpiamos un radio de 1.5 metros (suficiente para pasar) alrededor de la puerta
                 Collider2D[] obstacles = Physics2D.OverlapCircleAll(obj.transform.position, 1.5f);
 
                 foreach (Collider2D col in obstacles)
                 {
-                    if (col.GetComponent<Tilemap>() != null) continue;
+                    if (col.GetComponentInParent<Tilemap>() != null) continue;
 
-                    string colName = col.gameObject.name.ToLower();
-                    // Protegemos estructuras vitales
-                    if (colName.Contains("wall") || colName.Contains("corner") || colName.Contains("door") || colName.Contains("puerta")) continue;
+                    // Se comprueban los objetos que no se pueden eliminar
+                    string colName = col.transform.root.name.ToLower();
+                    if (colName.Contains("wall") || colName.Contains("corner") || colName.Contains("door") ||
+                        colName.Contains("puerta") || colName.Contains("chest") || colName.Contains("cofre") ||
+                        colName.Contains("treasure") || colName.Contains("tesoro"))
+                        continue;
 
-                    UniqueEntity entity = col.GetComponent<UniqueEntity>();
-                    if (entity != null && (entity.Type == EntityType.Pickup_Key || entity.Type == EntityType.Pickup_Diamond)) continue;
+                    UniqueEntity entity = col.GetComponentInParent<UniqueEntity>();
+                    if (entity != null && (entity.Type == EntityType.Pickup_Key || entity.Type == EntityType.Pickup_Diamond))
+                        continue;
 
                     Destroy(col.gameObject);
                 }
@@ -183,25 +240,6 @@ public class LevelGenerator : MonoBehaviour
             null,
             treasureRoomClosedDoor
         );
-
-        Vector3 center = new Vector3(0f, 0f, -0.1f);
-        if (treasurePrefab != null)
-        {
-            GameObject chest = Instantiate(treasurePrefab, center, Quaternion.identity);
-
-            // Se usa Network Object ya que el cofre debe de sincronizarse para todos los clientes
-            if (Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsServer)
-            {
-                var networkObject = chest.GetComponent<Unity.Netcode.NetworkObject>();
-                if (networkObject != null && !networkObject.IsSpawned)
-                {
-                    networkObject.Spawn();
-                }
-            }
-
-            UniqueEntity uniqueEntity = chest.GetComponent<UniqueEntity>();
-            if (uniqueEntity != null) uniqueEntity.RegenerateIdOnSpawn();
-        }
     }
 
     /// <summary>

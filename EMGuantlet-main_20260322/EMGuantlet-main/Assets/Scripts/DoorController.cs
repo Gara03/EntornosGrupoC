@@ -1,11 +1,18 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 [RequireComponent(typeof(UniqueEntity))]
-public class DoorController : MonoBehaviour
+public class DoorController : NetworkBehaviour
 {
     [SerializeField] private Sprite openDoorSprite;
 
-    private bool isOpen = false;
+    // Variable en red para comprobar el estado de la puerta
+    private NetworkVariable<bool> isOpen = new NetworkVariable<bool>(
+        false,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+
     private Collider2D triggerCollider;
     private Collider2D blockingCollider;
     private SpriteRenderer spriteRenderer;
@@ -20,14 +27,49 @@ public class DoorController : MonoBehaviour
     private void Awake()
     {
         uniqueEntity = GetComponent<UniqueEntity>();
-
-        if (uniqueEntity != null && uniqueEntity.Type != EntityType.Interactive_Door)
-        {
-            Debug.LogWarning($"[DoorController] {gameObject.name} tiene tipo {uniqueEntity.Type} en lugar de Interactive_Door");
-        }
-
         spriteRenderer = GetComponent<SpriteRenderer>();
         cacheColliders();
+    }
+
+    /// <summary>
+    /// Si es el host, spawnea todas las puertas.
+    /// </summary>
+    private void Start()
+    {
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer)
+        {
+            NetworkObject netObj = GetComponent<NetworkObject>();
+            if (netObj != null && !netObj.IsSpawned)
+            {
+                netObj.Spawn(); // Se spawnean las puertas en red
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gestiona el spawn de las puertas.
+    /// </summary>
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        // Se suscribe a los cambios en la puerta: abierta/cerrada
+        isOpen.OnValueChanged += OnDoorStateChanged;
+
+        // Si alguien se conecta tarde y la puerta ya estaba abierta se actualiza el sprite
+        if (isOpen.Value)
+        {
+            OpenDoor();
+        }
+    }
+
+    /// <summary>
+    /// Gestiona el despawn de las puertas.
+    /// </summary>
+    public override void OnNetworkDespawn()
+    {
+        isOpen.OnValueChanged -= OnDoorStateChanged;
+        base.OnNetworkDespawn();
     }
 
     /// <summary>
@@ -35,25 +77,41 @@ public class DoorController : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isOpen || !other.CompareTag("Player")) return;
+        if (!IsServer) return;
+
+        if (isOpen.Value || !other.CompareTag("Player")) return;
+
         if (!other.TryGetComponent(out PlayerController player)) return;
         if (GameManager.Instance == null) return;
 
-        if (GameManager.Instance.TryOpenDoor(player.EntityId, EntityId))
+        // Se valida si el jugador tiene llave 
+        if (GameManager.Instance.TryOpenDoor(player.OwnerClientId, EntityId))
         {
-            OpenDoor(player);
+            Debug.Log($"[Servidor] Puerta {EntityId} abierta por el Cliente {player.OwnerClientId}.");
+            isOpen.Value = true;
+        }
+        else
+        {
+            Debug.Log($"[Servidor] El Cliente {player.OwnerClientId} chocó con la puerta, pero NO tiene llaves.");
         }
     }
 
     /// <summary>
-    /// Abre la puerta visualmente y desactiva la colisión bloqueante.
+    /// Cambia el estado de la puerta.
     /// </summary>
-    public void OpenDoor(PlayerController player)
+    private void OnDoorStateChanged(bool previousValue, bool newValue)
     {
-        isOpen = true;
+        if (newValue && !previousValue)
+        {
+            OpenDoor();
+        }
+    }
 
-        Debug.Log($"[{EntityType}:{EntityId}] opened by [Player:{player.EntityId}]");
-
+    /// <summary>
+    /// Actualiza el sprite de la puerta segun su estado.
+    /// </summary>
+    private void OpenDoor()
+    {
         if (openDoorSprite != null && spriteRenderer != null)
         {
             spriteRenderer.sprite = openDoorSprite;
@@ -77,6 +135,11 @@ public class DoorController : MonoBehaviour
                 triggerCollider = col;
             else
                 blockingCollider = col;
+        }
+
+        if (triggerCollider == null || blockingCollider == null)
+        {
+            Debug.LogWarning($"[DoorController] A la puerta {gameObject.name} le falta un Collider. Necesita uno IsTrigger (para detectar) y uno normal (para chocar).");
         }
     }
 }

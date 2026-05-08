@@ -161,7 +161,8 @@ public abstract class EnemyController : CharController
 
         return null;
     }
-    [ServerRpc(RequireOwnership =false)] //porb que el cliente no es dueño del enemigo
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)] //porb que el cliente no es dueño del enemigo
     public void RequestHitServerRpc(int damage, ulong playerId)
     {
         TakeDamage(damage, Vector2.zero);
