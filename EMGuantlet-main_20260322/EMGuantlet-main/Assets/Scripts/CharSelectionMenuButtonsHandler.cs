@@ -122,32 +122,4 @@ public class CharSelectionMenuButtonsHandler : MonoBehaviour
             if (lobbyScene != null) lobbyScene.SetActive(true);
         }
     }
-
-
-    /*// <summary>
-    /// Valida la selección del personaje y delega el inicio de partida en GameManager.
-    /// </summary>
-    private void selectCharacterAndStartGame(PlayerStats characterStats)
-    {
-        if (characterStats == null)
-        {
-            Debug.LogError("[CharSelection] No se ha asignado PlayerStats para este personaje");
-            return;
-        }
-
-        GameManager.Instance?.StartGame(characterStats);
-    }
-
-    private void selectCharacterAndGoLobby(PlayerStats characterStats)
-    {
-        if (characterStats == null)
-        {
-            Debug.LogError("[CharSelection] No se ha asignado PlayerStats para este personaje");
-            return;
-        }
-
-        GameManager.Instance.SelectedCharacterStats = characterStats;
-
-        SceneManager.LoadScene(SceneNames.Lobby);
-    }*/
 }

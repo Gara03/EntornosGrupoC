@@ -62,7 +62,6 @@ public class EnemySpawner : NetworkBehaviour
             spawnPos += new Vector3(offset.x, offset.y, 0f);
         }
 
-
         GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
 
         //esto lo dejamos para debug
@@ -78,6 +77,5 @@ public class EnemySpawner : NetworkBehaviour
         {
             networkObject.Spawn();
         }
-       
     }
 }

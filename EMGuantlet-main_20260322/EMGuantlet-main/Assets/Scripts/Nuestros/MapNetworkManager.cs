@@ -11,7 +11,7 @@ public class MapNetworkManager : NetworkBehaviour
 
     private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0); // NetworkVariable para la semilla del mapa (se mandara la semilla a todos los clientes)
 
-    public NetworkVariable<int> globalEnemiesKilled = new NetworkVariable<int>(0); // NetworkVariable para 
+    public NetworkVariable<int> globalEnemiesKilled = new NetworkVariable<int>(0); // NetworkVariable para la muerte de enemigos
 
     [Header("Referencias")]
     public LevelGenerator levelGenerator;
@@ -20,9 +20,7 @@ public class MapNetworkManager : NetworkBehaviour
     /// <summary>
     /// Si se trata del Host, genera una semilla de forma aleatoria para generar el mapa y espera a que carguen todos los jugadores
     /// Si se trata de los clientes, se genera el mapa a partir de la semilla del Host 
-    /// </summary>
-    /// 
-
+    /// </summary> 
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -33,6 +31,9 @@ public class MapNetworkManager : NetworkBehaviour
         Instance = this;
     }
 
+    /// <summary>
+    /// Método que sincroniza el contador de enemigos y genera el mismo mapa a partir de la semilla para todos los clientes y host
+    /// </summary> 
     public override void OnNetworkSpawn()
     {
         if (GameManager.Instance != null)

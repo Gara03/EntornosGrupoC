@@ -20,8 +20,6 @@ public class CollectibleItem : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        // Si pones el objeto a mano en la escena para hacer pruebas, 
-        // esto obliga al servidor a reconocerlo en la red automáticamente.
         if (IsServer && !IsSpawned)
         {
             NetworkObject.Spawn();

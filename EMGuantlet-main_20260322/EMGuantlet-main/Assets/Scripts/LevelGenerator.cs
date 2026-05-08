@@ -52,8 +52,6 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private RingSettings[] castleRings;
 
     private Tilemap tilemap;
-    private bool hasPendingSpawn = false;
-    private Vector3 pendingSpawnPos;
     private MapConfig activeConfig => GameManager.Instance?.SelectedMapConfig ?? defaultMapConfig;
 
     /// <summary>
@@ -62,15 +60,6 @@ public class LevelGenerator : MonoBehaviour
     private void Awake()
     {
         tilemap = FindFirstObjectByType<Tilemap>();
-        //GameEvents.OnLocalPlayerRegistered += onLocalPlayerRegistered;
-    }
-
-    /// <summary>
-    /// Libera la suscripción al evento de registro del jugador local.
-    /// </summary>
-    private void OnDestroy()
-    {
-        GameEvents.OnLocalPlayerRegistered -= onLocalPlayerRegistered;
     }
 
     /// <summary>
@@ -83,7 +72,6 @@ public class LevelGenerator : MonoBehaviour
         Random.InitState(seed);
 
         generateLevel();
-
     }
 
     /// <summary>
@@ -455,7 +443,7 @@ public class LevelGenerator : MonoBehaviour
         float yMin = -totalWidth / 2f;
 
         // El margen se ajusta proporcionalmente al ancho del pasillo final.
-        // Si el anillo mide 4, el margen es ~1.5, dejando a los jugadores perfectamente en el centro del pasillo.
+        // Si el anillo mide 4, el margen es ~1.5, dejando a los jugadores en el centro del pasillo.
         float margin = Mathf.Max(1.5f, lastRingWidth * 0.35f);
 
         Vector3 basePos = new Vector3(xMin + margin, yMin + margin, -0.1f);
@@ -469,56 +457,5 @@ public class LevelGenerator : MonoBehaviour
         };
 
         return basePos + clusterOffsets[playerIndex % clusterOffsets.Length];
-    }
-
-
-    ///////// FUNCIONES QUE SE USABAN PARA EL LOCAL (SIN BORRAR)
-
-    /// <summary>
-    /// Aplica el spawn pendiente cuando se registra el jugador local.
-    /// </summary>
-    private void onLocalPlayerRegistered(PlayerController player)
-    {
-        if (player == null || !hasPendingSpawn) return;
-
-        applySpawnAndCharacter(player, pendingSpawnPos);
-        hasPendingSpawn = false;
-    }
-
-    /// <summary>
-    /// Activa y posiciona al jugador y aplica su configuración visual y de estadísticas.
-    /// </summary>
-    private void applySpawnAndCharacter(PlayerController player, Vector3 spawnPos)
-    {
-        player.gameObject.SetActive(true);
-        player.transform.position = spawnPos;
-        applySelectedCharacter(player);
-    }
-
-    /// <summary>
-    /// Aplica al jugador las estadísticas y el animator del personaje seleccionado.
-    /// </summary>
-    private void applySelectedCharacter(PlayerController player)
-    {
-        if (GameManager.Instance == null || GameManager.Instance.SelectedCharacterStats == null)
-        {
-            Debug.LogWarning("[LevelGenerator] No hay personaje seleccionado, usando configuración por defecto.");
-            return;
-        }
-
-        PlayerStats selectedStats = GameManager.Instance.SelectedCharacterStats;
-        player.ApplyCharacterStats(selectedStats);
-
-        if (selectedStats.animatorController != null)
-        {
-            Animator animator = player.GetComponent<Animator>();
-            if (animator != null)
-            {
-                animator.runtimeAnimatorController = selectedStats.animatorController;
-                Debug.Log($"[LevelGenerator] Animator cambiado a: {selectedStats.animatorController.name}");
-            }
-        }
-
-        Debug.Log($"[LevelGenerator] Personaje aplicado: {selectedStats.characterName}");
     }
 }

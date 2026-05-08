@@ -81,6 +81,8 @@ public abstract class EnemyController : CharController
     {
         if (IsServer && health <= 0)
         {
+            Die();
+
             if (MapNetworkManager.Instance != null)
             {
                 MapNetworkManager.Instance.AddKill();
@@ -89,7 +91,18 @@ public abstract class EnemyController : CharController
 
             spawnDrops();
 
-            GetComponent<NetworkObject>().Despawn();
+            Invoke(nameof(DespawnEnemyNetwork), 1.5f);
+        }
+    }
+
+    /// <summary>
+    /// Ejecuta la destruccion del enemigo en la red tras la animacion.
+    /// </summary>
+    private void DespawnEnemyNetwork()
+    {
+        if (NetworkObject != null && NetworkObject.IsSpawned)
+        {
+            NetworkObject.Despawn(true);
         }
     }
 
@@ -162,7 +175,7 @@ public abstract class EnemyController : CharController
         return null;
     }
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)] //porb que el cliente no es dueño del enemigo
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)] // El cliente no es dueño del enemigo
     public void RequestHitServerRpc(int damage, ulong playerId)
     {
         TakeDamage(damage, Vector2.zero);

@@ -141,8 +141,6 @@ public abstract class CharController : NetworkBehaviour
     /// </summary>
     protected virtual void LoadStats()
     {
-        //if (!IsOwner) return;
-
         if (stats != null)
         {
             moveSpeed = stats.moveSpeed;
@@ -173,14 +171,4 @@ public abstract class CharController : NetworkBehaviour
         rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
     }
 }
-
-
-////////////// TO DO LIST //////////////
-/// 
-/// eventos de animación para muerte de enemigos
-/// Usar eventos de animación para sincronizar destrucción y finalización de ataques.
-/// sonidos
-/// Reordenación de código (métodos y propiedades públicas al final, privados al principio)
-/// Documentación del proyecto (README, diagramas, comentarios en código, etc.)
-/// modificar la generación aleatoria del mapa para que encaje con el modo de semilla (seed) y sea reproducible
 

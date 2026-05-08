@@ -66,8 +66,6 @@ public class InGameManager : NetworkBehaviour
         if (warningPanel != null) warningPanel.SetActive(false);
     }
 
-    // Acciones locales
-
     /// <summary>
     /// Boton de salir
     /// </summary>
@@ -106,8 +104,6 @@ public class InGameManager : NetworkBehaviour
             ShutdownAndReturn();
         }
     }
-
-    // Acciones de red
 
     /// <summary>
     /// Al desconectarse el host se notifica a todos los clientes

@@ -53,7 +53,7 @@ public class DoorController : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
-        // Se suscribe a los cambios en la puerta: abierta/cerrada
+        // Se suscribe a los cambios de la puerta: abierta/cerrada
         isOpen.OnValueChanged += OnDoorStateChanged;
 
         // Si alguien se conecta tarde y la puerta ya estaba abierta se actualiza el sprite

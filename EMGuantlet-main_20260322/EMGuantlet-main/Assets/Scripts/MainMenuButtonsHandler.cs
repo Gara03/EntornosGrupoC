@@ -134,7 +134,7 @@ public class MainMenuButtonsHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// El Cliente ejecuta esto si el Host rechaza su conexión.
+    /// Metodo que ejecuta el cliente si el host rechaza su conexión.
     /// </summary>
     private void OnClientRejected(ulong clientId)
     {
