@@ -107,6 +107,11 @@ public class EnemyChaseController : EnemyController
         }
         else
         {
+            if (rb.linearVelocity.sqrMagnitude > 0.01f && playerTransform != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                playerTransform = null; // Se quita la referencia del jugador muerto
+            }
             wanderMovement();
         }
     }
