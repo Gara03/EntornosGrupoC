@@ -7,10 +7,9 @@ public class PlayerController : CharController
     private PlayerControls controls;
     private bool isReadyForMultiplayer = false;
 
+    // Variables network para los elementos coleccionables de la partida y kills
     public NetworkVariable<int> KeysCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<int> DiamondsCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-    // Variable Network
     private NetworkVariable<int> selectedCharacterIndex = new NetworkVariable<int>(
         -1,
         NetworkVariableReadPermission.Everyone,
@@ -24,14 +23,14 @@ public class PlayerController : CharController
         NetworkVariableWritePermission.Owner
     );
 
+    [Header("Character Colors")]
+    [SerializeField] private PlayerStats[] allCharacters;
+
     protected int damageToEnemy;
     protected float attackCooldown;
 
     public bool IsAttacking { get; private set; } = false;
     public int DamageToEnemy => damageToEnemy;
-
-    [Header("Character Colors")]
-    [SerializeField] private PlayerStats[] allCharacters;
 
     /// <summary>
     /// Inicializa controles de entrada y registra el jugador local en el gestor global.
@@ -46,112 +45,6 @@ public class PlayerController : CharController
         {
             col.enabled = false;
         }
-    }
-
-    /// <summary>
-    /// Se ejecuta en cuanto el jugador se conecta.
-    /// </summary>
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-
-        if (IsOwner)
-        {
-            controls = new PlayerControls();
-            controls.Player.Move.performed += ctx => movement = ctx.ReadValue<Vector2>();
-            controls.Player.Move.canceled += _ => movement = Vector2.zero;
-            controls.Player.Attack.performed += onAttack;
-            controls.Enable();
-
-            UniqueEntity uniqueEntity = GetComponent<UniqueEntity>();
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.RegisterLocalPlayer(this, uniqueEntity);
-            }
-
-            int index = FindCharacterIndex(GameManager.Instance.SelectedCharacterStats);
-            selectedCharacterIndex.Value = index;
-        }
-
-        selectedCharacterIndex.OnValueChanged += (oldVal, newVal) => ApplyVisuals(newVal);
-
-        if (selectedCharacterIndex.Value != -1)
-        {
-            ApplyVisuals(selectedCharacterIndex.Value);
-        }
-
-        //KeysCount.OnValueChanged += (oldVal, newVal) => GameEvents.KeysChanged(OwnerClientId);
-        //DiamondsCount.OnValueChanged += (oldVal, newVal) => GameEvents.DiamondsChanged(OwnerClientId);
-
-        KeysCount.OnValueChanged += (oldVal, newVal) => {
-            if (GameManager.Instance != null) GameManager.Instance.RecalculateGlobals();
-            GameEvents.KeysChanged(OwnerClientId);
-        };
-
-        DiamondsCount.OnValueChanged += (oldVal, newVal) => {
-            if (GameManager.Instance != null) GameManager.Instance.RecalculateGlobals();
-            GameEvents.DiamondsChanged(OwnerClientId);
-        };
-
-        // Forzamos un cálculo inicial nada más nacer
-        if (GameManager.Instance != null) GameManager.Instance.RecalculateGlobals();
-    }
-
-    /// <summary>
-    /// Desconecta al jugador de la red.
-    /// </summary>
-    public override void OnNetworkDespawn()
-    {
-        if (IsOwner && controls != null)
-        {
-            controls.Player.Attack.performed -= onAttack;
-            controls.Disable();
-        }
-        base.OnNetworkDespawn();
-    }
-
-    /// <summary>
-    /// Aplica el personaje seleccionado por el jugador.
-    /// </summary>
-    private void ApplyVisuals(int index)
-    {
-        if (index < 0 || index >= allCharacters.Length) return;
-        PlayerStats selectedStats = allCharacters[index];
-
-        if (animator != null && selectedStats.animatorController != null)
-        {
-            animator.runtimeAnimatorController = selectedStats.animatorController;
-            animator.Update(0);
-        }
-
-        this.stats = selectedStats;
-        LoadStats();
-
-        if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = true;
-
-        Invoke(nameof(EnablePhysics), 0.5f);
-    }
-
-
-    /// <summary>
-    /// Activa el collider del personaje.
-    /// </summary>
-    private void EnablePhysics()
-    {
-        isReadyForMultiplayer = true;
-        Collider2D[] colliders = GetComponents<Collider2D>();
-        foreach (Collider2D col in colliders) col.enabled = true;
-    }
-
-    /// <summary>
-    /// Busca el personaje a seleccionar.
-    /// </summary>
-    private int FindCharacterIndex(PlayerStats targetStats)
-    {
-        if (allCharacters == null) return 0;
-        for (int i = 0; i < allCharacters.Length; i++)
-            if (allCharacters[i] == targetStats) return i;
-        return 0;
     }
 
     /// <summary>
@@ -199,41 +92,132 @@ public class PlayerController : CharController
     }
 
     /// <summary>
-    /// Gestiona la muerte del jugador y lanza el flujo de fin de partida.
+    /// Activa el mapa de controles y suscribe la acción de ataque.
     /// </summary>
-    public override void Die()
+    private void OnEnable()
     {
+        if (controls == null) controls = new PlayerControls();
         if (!IsOwner) return;
 
-        base.Die();
-
-        // Dispara evento de muerte
-        GameEvents.PlayerDied(OwnerClientId);
-
-        NotifyDeathServerRpc();
-
-        GameManager.Instance?.TriggerGameOver();
-    }
-
-    [Rpc(SendTo.Server)]
-    private void NotifyDeathServerRpc()
-    {
-        // Simplemente lo volvemos intocable en el servidor
-        Collider2D[] colliders = GetComponents<Collider2D>();
-        foreach (Collider2D col in colliders) col.enabled = false;
+        controls.Enable();
+        controls.Player.Attack.performed += onAttack;
     }
 
     /// <summary>
-    /// Aplica daño al jugador y notifica el cambio de salud al HUD.
+    /// Desuscribe la acción de ataque y desactiva el mapa de controles.
     /// </summary>
-    public override void TakeDamage(int amount, Vector2 knockbackDir)
+    private void OnDisable()
     {
-        if (!IsOwner || !isReadyForMultiplayer) return;
+        if (!IsOwner || controls == null) return;
 
-        base.TakeDamage(amount, knockbackDir);
+        controls.Player.Attack.performed -= onAttack;
+        controls.Disable();
+    }
 
-        // Dispara evento de cambio de salud
-        GameEvents.HealthChanged(OwnerClientId, health);
+    /// <summary>
+    /// Se ejecuta en cuanto el jugador se conecta.
+    /// </summary>
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        if (IsOwner)
+        {
+            controls = new PlayerControls();
+            controls.Player.Move.performed += ctx => movement = ctx.ReadValue<Vector2>();
+            controls.Player.Move.canceled += _ => movement = Vector2.zero;
+            controls.Player.Attack.performed += onAttack;
+            controls.Enable();
+
+            UniqueEntity uniqueEntity = GetComponent<UniqueEntity>();
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.RegisterLocalPlayer(this, uniqueEntity);
+            }
+
+            int index = FindCharacterIndex(GameManager.Instance.SelectedCharacterStats);
+            selectedCharacterIndex.Value = index;
+        }
+
+        selectedCharacterIndex.OnValueChanged += (oldVal, newVal) => ApplyVisuals(newVal);
+
+        // Personaje elegido
+        if (selectedCharacterIndex.Value != -1)
+        {
+            ApplyVisuals(selectedCharacterIndex.Value);
+        }
+
+        // Recalcular valores de llaves y gemas 
+        KeysCount.OnValueChanged += (oldVal, newVal) => {
+            if (GameManager.Instance != null) GameManager.Instance.RecalculateGlobals();
+            GameEvents.KeysChanged(OwnerClientId);
+        };
+
+        DiamondsCount.OnValueChanged += (oldVal, newVal) => {
+            if (GameManager.Instance != null) GameManager.Instance.RecalculateGlobals();
+            GameEvents.DiamondsChanged(OwnerClientId);
+        };
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RecalculateGlobals();
+        }
+    }
+
+    /// <summary>
+    /// Desconecta al jugador de la red.
+    /// </summary>
+    public override void OnNetworkDespawn()
+    {
+        if (IsOwner && controls != null)
+        {
+            controls.Player.Attack.performed -= onAttack;
+            controls.Disable();
+        }
+        base.OnNetworkDespawn();
+    }
+
+    /// <summary>
+    /// Aplica el personaje seleccionado por el jugador.
+    /// </summary>
+    private void ApplyVisuals(int index)
+    {
+        if (index < 0 || index >= allCharacters.Length) return;
+        PlayerStats selectedStats = allCharacters[index];
+
+        if (animator != null && selectedStats.animatorController != null)
+        {
+            animator.runtimeAnimatorController = selectedStats.animatorController;
+            animator.Update(0);
+        }
+
+        this.stats = selectedStats;
+        LoadStats();
+
+        if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = true;
+
+        Invoke(nameof(EnablePhysics), 0.5f);
+    }
+
+    /// <summary>
+    /// Activa el collider del personaje.
+    /// </summary>
+    private void EnablePhysics()
+    {
+        isReadyForMultiplayer = true;
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        foreach (Collider2D col in colliders) col.enabled = true;
+    }
+
+    /// <summary>
+    /// Busca el personaje a seleccionar.
+    /// </summary>
+    private int FindCharacterIndex(PlayerStats targetStats)
+    {
+        if (allCharacters == null) return 0;
+        for (int i = 0; i < allCharacters.Length; i++)
+            if (allCharacters[i] == targetStats) return i;
+        return 0;
     }
 
     /// <summary>
@@ -260,7 +244,7 @@ public class PlayerController : CharController
         // cargamos vida y velocidad base
         base.LoadStats();
 
-        //cargamos daño y cooldown
+        // cargamos daño y cooldown
         PlayerStats playerStats = stats as PlayerStats;
         if (playerStats != null)
         {
@@ -277,16 +261,30 @@ public class PlayerController : CharController
     }
 
     /// <summary>
-    /// Verifica si la salud ha llegado a cero y ejecuta la muerte una sola vez.
+    /// Envia las estadisticas finales (enemigos, llaves y gemas) a todos los jugadores.
     /// </summary>
-    private void checkDeath()
+    [Rpc(SendTo.Everyone)]
+    public void SyncVictoryStatsRpc(int totalKeys, int totalDiamonds, int totalEnemies)
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.GlobalKeys = totalKeys;
+            GameManager.Instance.GlobalDiamonds = totalDiamonds;
+            GameManager.Instance.UpdateEnemiesKilledLocally(totalEnemies);
+        }
+    }
+
+    /// <summary>
+    /// Aplica daño al jugador y notifica el cambio de salud al HUD.
+    /// </summary>
+    public override void TakeDamage(int amount, Vector2 knockbackDir)
     {
         if (!IsOwner || !isReadyForMultiplayer) return;
 
-        if (health <= 0 && !isDead)
-        {
-            Die();
-        }
+        base.TakeDamage(amount, knockbackDir);
+
+        // Dispara evento de cambio de salud
+        GameEvents.HealthChanged(OwnerClientId, health);
     }
 
     /// <summary>
@@ -311,7 +309,6 @@ public class PlayerController : CharController
         IsAttacking = false;
     }
 
-
     /// <summary>
     /// Todos los clientes y el Host reciben el aviso de que el jugador ha atacado.
     /// </summary>
@@ -324,28 +321,8 @@ public class PlayerController : CharController
     }
 
     /// <summary>
-    /// Activa el mapa de controles y suscribe la acción de ataque.
+    /// Gestiona el daño recibido del propio jugador.
     /// </summary>
-    private void OnEnable()
-    {
-        if (controls == null) controls = new PlayerControls();
-        if (!IsOwner) return;
-
-        controls.Enable();
-        controls.Player.Attack.performed += onAttack;
-    }
-
-    /// <summary>
-    /// Desuscribe la acción de ataque y desactiva el mapa de controles.
-    /// </summary>
-    private void OnDisable()
-    {
-        if (!IsOwner || controls == null) return;
-
-        controls.Player.Attack.performed -= onAttack;
-        controls.Disable();
-    }
-
     [Rpc(SendTo.Owner)]
     public void ReceiveDamageRpc(int amount, Vector2 knockbackDir)
     {
@@ -354,13 +331,66 @@ public class PlayerController : CharController
         TakeDamage(amount, knockbackDir);
     }
 
+    /// <summary>
+    /// Avisa al servidor que se ha recibido un ataque.
+    /// </summary>
     [Rpc(SendTo.Server)]
     private void NotifyAttackServerRpc()
     {
-        // el servidor registra que esta atacando
         IsAttacking = true;
         Invoke(nameof(endAttack), attackCooldown);
-
         PlayAttackAnimationRpc();
+    }
+
+    /// <summary>
+    /// Verifica si la salud ha llegado a cero y ejecuta la muerte una sola vez.
+    /// </summary>
+    private void checkDeath()
+    {
+        if (!IsOwner || !isReadyForMultiplayer) return;
+
+        if (health <= 0 && !isDead)
+        {
+            Die();
+        }
+    }
+
+    /// <summary>
+    /// Gestiona la muerte del jugador y lanza el flujo de fin de partida.
+    /// </summary>
+    public override void Die()
+    {
+        if (!IsOwner) return;
+
+        base.Die();
+
+        // Dispara evento de muerte
+        GameEvents.PlayerDied(OwnerClientId);
+
+        NotifyDeathServerRpc();
+
+        GameManager.Instance?.TriggerGameOver();
+    }
+
+    /// <summary>
+    /// Avisa al servidor de una muerte.
+    /// </summary>
+    [Rpc(SendTo.Server)]
+    private void NotifyDeathServerRpc()
+    {
+        // Simplemente lo volvemos intocable en el servidor
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        foreach (Collider2D col in colliders) col.enabled = false;
+
+        HideBodyRpc();
+    }
+
+    /// <summary>
+    /// Desactiva el cuerpo del personaje para todos los jugadores.
+    /// </summary>
+    [Rpc(SendTo.Everyone)]
+    private void HideBodyRpc()
+    {
+        if (TryGetComponent(out SpriteRenderer sr)) sr.enabled = false;
     }
 }

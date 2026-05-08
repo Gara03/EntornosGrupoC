@@ -11,7 +11,9 @@ public class MapNetworkManager : NetworkBehaviour
 
     private NetworkVariable<int> mapSeed = new NetworkVariable<int>(0); // NetworkVariable para la semilla del mapa (se mandara la semilla a todos los clientes)
 
-    public NetworkVariable<int> globalEnemiesKilled = new NetworkVariable<int>(0); // NetworkVariable para la muerte de enemigos
+    public NetworkVariable<int> globalEnemiesKilled = new NetworkVariable<int>(0); // NetworkVariable para el contador de enemigos
+    public NetworkVariable<int> globalKeys = new NetworkVariable<int>(0); // NetworkVariable para el contador de llaves
+    public NetworkVariable<int> globalDiamonds = new NetworkVariable<int>(0); // NetworkVariable para el contador de gemas
 
     [Header("Referencias")]
     public LevelGenerator levelGenerator;
@@ -32,21 +34,35 @@ public class MapNetworkManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// Método que sincroniza el contador de enemigos y genera el mismo mapa a partir de la semilla para todos los clientes y host
+    /// Método que sincroniza el contador de enemigos y recolectables y genera el mismo mapa a partir de la semilla para todos los clientes y host
     /// </summary> 
     public override void OnNetworkSpawn()
     {
         if (GameManager.Instance != null)
         {
             GameManager.Instance.UpdateEnemiesKilledLocally(globalEnemiesKilled.Value);
+            GameManager.Instance.GlobalKeys = globalKeys.Value;
+            GameManager.Instance.GlobalDiamonds = globalDiamonds.Value;
         }
 
+        // Contador de enemigos
         globalEnemiesKilled.OnValueChanged += (oldVal, newVal) => {
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.UpdateEnemiesKilledLocally(newVal);
             }
         };
+
+        // Contador de llaves
+        globalKeys.OnValueChanged += (oldVal, newVal) => {
+            if (GameManager.Instance != null) GameManager.Instance.GlobalKeys = newVal;
+        };
+
+        // Contador de gemas
+        globalDiamonds.OnValueChanged += (oldVal, newVal) => {
+            if (GameManager.Instance != null) GameManager.Instance.GlobalDiamonds = newVal;
+        };
+
         if (IsServer)
         {
             int randomSeed = Random.Range(1, 999999);
@@ -62,6 +78,27 @@ public class MapNetworkManager : NetworkBehaviour
                 if (newVal != 0) levelGenerator.StartGenerationWithSeed(newVal);
             };
         }
+    }
+
+    /// <summary>
+    /// El serevidor suma lo que tienen todos los jugadores y lo guarda en las variables de red.
+    /// </summary>
+    public void RecalculateGlobals()
+    {
+        if (!IsServer) return; // Solo el servidor puede hacer las sumas
+
+        int sumKeys = 0;
+        int sumDiamonds = 0;
+
+        PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        foreach (var p in allPlayers)
+        {
+            sumKeys += p.KeysCount.Value;
+            sumDiamonds += p.DiamondsCount.Value;
+        }
+
+        globalKeys.Value = sumKeys;
+        globalDiamonds.Value = sumDiamonds;
     }
 
     /// <summary>

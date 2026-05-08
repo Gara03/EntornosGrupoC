@@ -136,6 +136,9 @@ public class GameManager : MonoBehaviour
         return 0;
     }
 
+    /// <summary>
+    /// Añade una llave al jugador.
+    /// </summary>
     public bool TryAddKey(ulong clientId, string keyEntityId)
     {
         if (!Unity.Netcode.NetworkManager.Singleton.IsServer) return false;
@@ -152,6 +155,9 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Añade una gema al jugador.
+    /// </summary>
     public bool TryAddDiamond(ulong clientId, string diamondEntityId)
     {
         if (!Unity.Netcode.NetworkManager.Singleton.IsServer) return false;
@@ -162,7 +168,6 @@ public class GameManager : MonoBehaviour
             if (p.OwnerClientId == clientId)
             {
                 p.DiamondsCount.Value++;
-                //GlobalDiamonds++;
                 return true;
             }
         }
@@ -193,7 +198,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
         return false;
     }
 
@@ -202,7 +206,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool TryTriggerVictory(ulong winnerClientId)
     {
-        if (Unity.Netcode.NetworkManager.Singleton.IsServer)    // solo el server tiene permiso para procesar la victoria
+        if (Unity.Netcode.NetworkManager.Singleton.IsServer) // Solo el server tiene permiso para procesar la victoria
         {
             victoryAchieved(winnerClientId);
             return true;
@@ -217,7 +221,6 @@ public class GameManager : MonoBehaviour
     {
         ResetGameData();
     }
-
 
     /// <summary>
     /// Inicia el flujo de fin de partida por muerte del jugador.
@@ -243,43 +246,65 @@ public class GameManager : MonoBehaviour
     /// Carga la escena de derrota del jugador.
     /// </summary>
     private void loadDeadScene()
-    {
-        if (Unity.Netcode.NetworkManager.Singleton.IsServer)
-        {
-            // PARA EL HOST: Carga aditiva para no cerrar el servidor
-            SceneManager.LoadScene(SceneNames.DeadScene, LoadSceneMode.Additive);
-
-            // Desactiva la cámara de juego para que se vea la de DeadScene
-            if (LocalPlayerController != null)
-            {
-                // Puedes buscar la cámara principal y apagarla
-                Camera.main.gameObject.SetActive(false);
-            }
-        }
-        else
-        {
-            // PARA EL CLIENTE: Carga normal, se desconecta y se va a su pantalla
-            SceneManager.LoadScene(SceneNames.DeadScene);
-        }
+    {  
+         SceneManager.LoadScene(SceneNames.DeadScene, LoadSceneMode.Additive);
     }
 
     /// <summary>
-    /// Registra logs de victoria y programa la carga de la escena final.
+    /// Registra la victoria y carga la escena final.
     /// </summary>
     private void victoryAchieved(ulong winnerClientId)
     {
         if (Unity.Netcode.NetworkManager.Singleton.IsServer)
         {
-            Debug.Log("[GameManager] Victoria. Limpiando mapa...");
-            clearMapEntities();
-        }
+            Debug.Log("[GameManager] Victoria detectada. Sincronizando totales...");
+            int finalKeys = 0;
+            int finalDiamonds = 0;
+            PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None); // Se accede a todos los jugadores
 
+            foreach (var p in allPlayers)
+            {
+                finalKeys += p.KeysCount.Value;
+                finalDiamonds += p.DiamondsCount.Value;
+            }
+
+            // Guardamos en el Host
+            GlobalKeys = finalKeys;
+            GlobalDiamonds = finalDiamonds;
+
+            // Se sincronizan todos los datos de todos los jugadores
+            if (LocalPlayerController != null)
+            {
+                LocalPlayerController.SyncVictoryStatsRpc(finalKeys, finalDiamonds, EnemiesKilled);
+            }
+
+            clearMapEntities(); // Se resetea el mapa
+
+            Invoke(nameof(DespawnAllPlayersNetwork), 0.4f);
+        }
         Invoke(nameof(loadVictoryScene), delayBeforeScene);
     }
 
     /// <summary>
-    /// Recalcula los totales leyendo las variables de red de todos los jugadores vivos.
-    /// Al ejecutarse tanto en Host como en Cliente, ¡los datos están siempre sincronizados!
+    /// Elimina a todos los jugadores de la red tras ganar.
+    /// </summary>
+    private void DespawnAllPlayersNetwork()
+    {
+        if (Unity.Netcode.NetworkManager.Singleton.IsServer)
+        {
+            PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+            foreach (var p in allPlayers)
+            {
+                if (p.NetworkObject != null && p.NetworkObject.IsSpawned)
+                {
+                    p.NetworkObject.Despawn(true);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Recalcula las estadisticas leyendo las variables de red de todos los jugadores vivos.
     /// </summary>
     public void RecalculateGlobals()
     {
