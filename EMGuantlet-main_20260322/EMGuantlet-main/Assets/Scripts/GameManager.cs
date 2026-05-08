@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
@@ -194,11 +195,11 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Intenta activar la condición de victoria para el jugador actual.
     /// </summary>
-    public bool TryTriggerVictory(string playerEntityId, string chestEntityId)
+    public bool TryTriggerVictory(ulong winnerClientId)
     {
         if (Unity.Netcode.NetworkManager.Singleton.IsServer)    // solo el server tiene permiso para procesar la victoria
         {
-            victoryAchieved();
+            victoryAchieved(winnerClientId);
             return true;
         }
         return false;
@@ -211,38 +212,6 @@ public class GameManager : MonoBehaviour
     {
         ResetGameData();
     }
-
-    ///// METODOS ANTIGUOS (LOCAL) DE START
-
-    /// <summary>
-    /// Guarda el personaje seleccionado, reinicia datos y carga el nivel de juego.
-    /// </summary>
-    /*public void StartGame(PlayerStats selectedCharacter)
-    {
-        if (selectedCharacter == null)
-        {
-            Debug.LogError("[GameManager] StartGame llamado sin personaje seleccionado.");
-            return;
-        }
-
-        Debug.Log($"selected character is {selectedCharacter.characterName}");
-        SelectedCharacterStats = selectedCharacter;
-        ResetGameData();
-
-        SceneManager.LoadScene(SceneNames.PlaygroundLevel);
-    }
-
-    /// <summary>
-    /// Guarda mapa y personaje seleccionados e inicia la partida.
-    /// </summary>
-    public void StartGame(PlayerStats selectedCharacter, MapConfig selectedMap)
-    {
-        SelectedMapConfig = selectedMap;
-        StartGame(selectedCharacter);
-    }*/
-
-
-
 
     /// <summary>
     /// Inicia el flujo de fin de partida por muerte del jugador.
@@ -292,10 +261,11 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Registra logs de victoria y programa la carga de la escena final.
     /// </summary>
-    private void victoryAchieved()
+    private void victoryAchieved(ulong winnerClientId)
     {
         if (Unity.Netcode.NetworkManager.Singleton.IsServer)
         {
+            // Se calculan las estadisticas
             int sumKeys = 0;
             int sumDiamonds = 0;
 
@@ -306,12 +276,56 @@ public class GameManager : MonoBehaviour
                 sumKeys += p.KeysCount.Value;
                 sumDiamonds += p.DiamondsCount.Value;
             }
+
+            // 2. SINCRONIZAR: Enviamos los datos finales a los clientes mientras los objetos existen
             if (LocalPlayerController != null)
             {
                 LocalPlayerController.SyncVictoryStatsRpc(sumKeys, sumDiamonds, EnemiesKilled);
             }
+
+            // 3. LIMPIEZA TOTAL DE JUGADORES: Borramos a todos sin excepción
+            foreach (var p in allPlayers)
+            {
+                if (p.NetworkObject != null && p.NetworkObject.IsSpawned)
+                {
+                    // Al no haber 'if' de exclusión, el ganador también es eliminado
+                    p.NetworkObject.Despawn(true);
+                }
+            }
+
+            // 4. LIMPIEZA DEL MAPA: Enemigos, puertas y el propio cofre
+            clearMapEntities();
         }
+
+        // Esperamos el tiempo de retardo antes de cambiar a la escena de créditos/victoria
         Invoke(nameof(loadVictoryScene), delayBeforeScene);
+    }
+
+    /// <summary>
+    /// Destruye todos los elementos interactivos y enemigos del mapa para todos los jugadores cuando se ha alcanzado el cofre.
+    /// </summary>
+    private void clearMapEntities()
+    {
+        // Se buscan todos los elementos interactivos (enemigos, cofres, puertas, etc)
+        UniqueEntity[] allEntities = FindObjectsByType<UniqueEntity>(FindObjectsSortMode.None);
+
+        foreach (UniqueEntity entity in allEntities)
+        {
+            // Se protege a los jugadores
+            if (entity.GetComponent<PlayerController>() != null) continue;
+
+            // Se eliminan de la red los elementos
+            if (entity.TryGetComponent(out NetworkObject netObj) && netObj.IsSpawned)
+            {
+                netObj.Despawn(true);
+            }
+            else
+            {
+                Destroy(entity.gameObject);
+            }
+        }
+
+        Debug.Log("[GameManager] El mapa ha sido limpiado. Enemigos, puertas y cofres eliminados para todos los clientes.");
     }
 
     /// <summary>

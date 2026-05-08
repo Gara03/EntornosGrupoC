@@ -2,16 +2,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(UniqueEntity))] // ✅ Requiere UniqueEntity
+[RequireComponent(typeof(UniqueEntity))] // Requiere UniqueEntity
 public class ChestController : NetworkBehaviour
 {
 
     private bool collected = false;
     
-    // ✅ Nueva variable para UniqueEntity
+    // Nueva variable para UniqueEntity
     private UniqueEntity uniqueEntity;
     
-    // ✅ Propiedades de acceso rápido
+    // Propiedades de acceso rápido
     public string EntityId => uniqueEntity?.EntityId ?? "UNKNOWN";
     public EntityType EntityType => uniqueEntity?.Type ?? EntityType.Interactive_Chest;
     
@@ -20,7 +20,7 @@ public class ChestController : NetworkBehaviour
     /// </summary>
     private void Awake()
     {
-        // ✅ Obtener UniqueEntity
+        // Obtener UniqueEntity
         uniqueEntity = GetComponent<UniqueEntity>();
         
         // Validación del tipo correcto
@@ -33,23 +33,20 @@ public class ChestController : NetworkBehaviour
     /// <summary>
     /// Detecta la interacción con el jugador e intenta activar la victoria una sola vez.
     /// </summary>
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
+        // El servidor es el que gestiona la victoria
         if (!IsServer || collected) return;
-
         if (!collision.gameObject.CompareTag("Player")) return;
 
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player == null) return;
 
-        // ✅ Log con IDs para debugging multiplayer
-        Debug.Log($"[{EntityType}:{EntityId}] opened by [Player:{player.EntityId}]");
+        Debug.Log($"[{EntityType}:{EntityId}] opened by [Client:{player.OwnerClientId}]");
 
-        if (GameManager.Instance != null && GameManager.Instance.TryTriggerVictory(player.EntityId, EntityId))
+        if (GameManager.Instance != null && GameManager.Instance.TryTriggerVictory(player.OwnerClientId))
         {
             collected = true;
         }
     }
-
-
 }

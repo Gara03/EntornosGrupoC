@@ -230,6 +230,19 @@ public class LevelGenerator : MonoBehaviour
 
         int roomSize = activeConfig != null ? activeConfig.treasureRoomSize : 7;
 
+        // Si el mapa es el minimo sin enemigos o medio sin recompensas, se abren las puertas de la habitacion
+        bool isSpecialMap = false;
+        if (activeConfig != null && !string.IsNullOrEmpty(activeConfig.mapName))
+        {
+            string mName = activeConfig.mapName.ToLower();
+            if (mName.Contains("sin"))
+            {
+                isSpecialMap = true;
+            }
+        }
+
+        GameObject closedDoorToPass = isSpecialMap ? treasureRoomOpenDoor : treasureRoomClosedDoor;
+
         tilemapFiller.BuildSquareRoom(
             tilemap,
             roomSize,
@@ -238,7 +251,7 @@ public class LevelGenerator : MonoBehaviour
             treasureRoomWallPrefab,
             treasureRoomCornerPrefab,
             null,
-            treasureRoomClosedDoor
+            closedDoorToPass
         );
     }
 
@@ -259,11 +272,20 @@ public class LevelGenerator : MonoBehaviour
             if (isRingEnabled(cfg, i))
             {
                 outermostWallIndex = i;
-                break; 
+                break;
             }
         }
 
-        Debug.Log($"[LevelGenerator] El muro exterior dinámico detectado es: {outermostWallIndex}");
+        // Si el mapa es el minimo sin enemigos o medio sin recompensas, se abren las puertas de todos los anillos
+        bool isSpecialMap = false;
+        if (cfg != null && !string.IsNullOrEmpty(cfg.mapName))
+        {
+            string mName = cfg.mapName.ToLower();
+            if (mName.Contains("sin"))
+            {
+                isSpecialMap = true;
+            }
+        }
 
         for (int i = 0; i < castleRings.Length; i++)
         {
@@ -279,7 +301,18 @@ public class LevelGenerator : MonoBehaviour
             GameObject[] spawners = buildSpawnersArray(cfg, i);
             float decorativePercentage = getDecorativePercentage(cfg, i, ring);
 
+            // Logica puertas abiertas/cerradas
             GameObject openDoorToPass = (i == outermostWallIndex) ? ring.openDoor : null;
+            GameObject closedDoorToPass;
+
+            if (isLastRing)
+            {
+                closedDoorToPass = null;
+            }
+            else
+            {
+                closedDoorToPass = isSpecialMap ? ring.openDoor : ring.closedDoor;
+            }
 
             tilemapFiller.BuildRectangularRingRoom(
                 tilemap,
@@ -289,8 +322,8 @@ public class LevelGenerator : MonoBehaviour
                 spawners,
                 ring.wallPrefab,
                 ring.cornerPrefab,
-                openDoorToPass, 
-                isLastRing ? null : ring.closedDoor,
+                openDoorToPass,
+                closedDoorToPass,
                 ring.decorativeElement,
                 decorativePercentage
             );
@@ -395,7 +428,6 @@ public class LevelGenerator : MonoBehaviour
 
     /// <summary>
     /// Calcula y prepara la posición de spawn del jugador para aplicarla al comenzar.
-    ///  ¡¡¡¡¡¡ SE TIENE QUE CAMBIAR PARA EL RESTO DE CONFIGURACIONES DE MAPAS !!!!!!
     /// </summary>
     public Vector3 GetPlayerSpawnPosition(int playerIndex = 0)
     {

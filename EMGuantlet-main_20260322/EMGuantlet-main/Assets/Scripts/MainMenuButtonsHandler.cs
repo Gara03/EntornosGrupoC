@@ -87,7 +87,7 @@ public class MainMenuButtonsHandler : MonoBehaviour
         }
 
         ShowErrorPanel("Esperando al host...");
-        if (closeErrorButton != null) closeErrorButton.interactable = false;
+        if (closeErrorButton != null) closeErrorButton.interactable = true;
 
         NetworkManager.Singleton.NetworkConfig.ConnectionApproval = true;
 
@@ -181,6 +181,16 @@ public class MainMenuButtonsHandler : MonoBehaviour
         if (errorPanel != null)
         {
             errorPanel.SetActive(false);
+        }
+
+        // Si se intenta conectar como cliente y se cancela
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsClient)
+        {
+            Debug.Log("[MainMenu] Búsqueda de partida cancelada por el usuario.");
+
+            // Se desuscribe al evento y se apaga la red
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientRejected;
+            NetworkManager.Singleton.Shutdown();
         }
     }
 
