@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour
     public PlayerStats SelectedCharacterStats { get; set; }
     public MapConfig SelectedMapConfig { get; set; }
 
+    public int GlobalKeys { get; set; }
+    public int GlobalDiamonds { get; set; }
+
     /// <summary>
     /// Inicializa el singleton del juego y sus datos persistentes.
     /// </summary>
@@ -97,6 +100,8 @@ public class GameManager : MonoBehaviour
     {
         playerStates.Clear();
         EnemiesKilled = 0;
+        GlobalKeys = 0;     
+        GlobalDiamonds = 0;
     }
 
     /// <summary>
@@ -191,7 +196,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool TryTriggerVictory(string playerEntityId, string chestEntityId)
     {
-        if (playerStates.TryGetValue(playerEntityId, out PlayerGameState state))
+        if (Unity.Netcode.NetworkManager.Singleton.IsServer)    // solo el server tiene permiso para procesar la victoria
         {
             victoryAchieved();
             return true;
@@ -289,7 +294,23 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void victoryAchieved()
     {
-        Debug.Log($"[GameManager] Victoria. Keys: {GetKeys()}, Diamonds: {GetDiamonds()}, Enemies: {EnemiesKilled}");
+        if (Unity.Netcode.NetworkManager.Singleton.IsServer)
+        {
+            int sumKeys = 0;
+            int sumDiamonds = 0;
+
+            PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+
+            foreach (var p in allPlayers)
+            {
+                sumKeys += p.KeysCount.Value;
+                sumDiamonds += p.DiamondsCount.Value;
+            }
+            if (LocalPlayerController != null)
+            {
+                LocalPlayerController.SyncVictoryStatsRpc(sumKeys, sumDiamonds, EnemiesKilled);
+            }
+        }
         Invoke(nameof(loadVictoryScene), delayBeforeScene);
     }
 
@@ -298,7 +319,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void loadVictoryScene()
     {
-        SceneManager.LoadScene(SceneNames.VictoryScene);
+        if (Unity.Netcode.NetworkManager.Singleton.IsServer)
+        {
+            Unity.Netcode.NetworkManager.Singleton.SceneManager.LoadScene(SceneNames.VictoryScene, UnityEngine.SceneManagement.LoadSceneMode.Single);
+        }
     }
 
     /// <summary>

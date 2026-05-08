@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(UniqueEntity))] // ✅ Requiere UniqueEntity
-public class ChestController : MonoBehaviour
+public class ChestController : NetworkBehaviour
 {
 
     private bool collected = false;
@@ -34,7 +35,8 @@ public class ChestController : MonoBehaviour
     /// </summary>
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collected) return;
+        if (!IsServer || collected) return;
+
         if (!collision.gameObject.CompareTag("Player")) return;
 
         PlayerController player = collision.gameObject.GetComponent<PlayerController>();

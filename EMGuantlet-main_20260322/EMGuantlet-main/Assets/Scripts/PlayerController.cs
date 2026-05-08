@@ -351,4 +351,14 @@ public class PlayerController : CharController
 
         PlayAttackAnimationRpc();
     }
+
+    [Rpc(SendTo.Everyone)]
+    public void SyncVictoryStatsRpc(int totalKeys, int totalDiamonds, int totalEnemies)
+    {
+        GameManager.Instance.GlobalKeys = totalKeys;
+        GameManager.Instance.GlobalDiamonds = totalDiamonds;
+        GameManager.Instance.UpdateEnemiesKilledLocally(totalEnemies);
+
+        Debug.Log($"[Red] Estadísticas globales sincronizadas: K:{totalKeys} D:{totalDiamonds} E:{totalEnemies}");
+    }
 }

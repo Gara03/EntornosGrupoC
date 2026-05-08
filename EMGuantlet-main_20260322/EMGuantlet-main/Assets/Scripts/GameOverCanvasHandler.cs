@@ -27,6 +27,12 @@ public class GameOverCanvasHandler : MonoBehaviour
     /// </summary>
     public void OnBackButtonClicked()
     {
+        // apaga la red al volver al menu principal
+        if (Unity.Netcode.NetworkManager.Singleton != null)
+        {
+            Unity.Netcode.NetworkManager.Singleton.Shutdown();
+        }
+
         SceneManager.LoadScene(SceneNames.MainMenu);
     }
 
@@ -38,10 +44,10 @@ public class GameOverCanvasHandler : MonoBehaviour
         if (GameManager.Instance == null) return;
 
         if (jewelsValueText != null)
-            jewelsValueText.text = GameManager.Instance.GetDiamonds().ToString();
+            jewelsValueText.text = GameManager.Instance.GlobalDiamonds.ToString();
 
         if (keysValueText != null)
-            keysValueText.text = GameManager.Instance.GetKeys().ToString();
+            keysValueText.text = GameManager.Instance.GlobalKeys.ToString();
 
         if (enemiesKilledText != null)
             enemiesKilledText.text = GameManager.Instance.EnemiesKilled.ToString();
