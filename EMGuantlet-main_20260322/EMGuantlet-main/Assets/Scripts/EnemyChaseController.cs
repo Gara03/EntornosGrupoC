@@ -85,11 +85,9 @@ public class EnemyChaseController : EnemyController
                 {
                     PlayerController pController = client.PlayerObject.GetComponent<PlayerController>();
 
-                    if (pController != null && !pController.IsDead)
+                    if (pController != null && !pController.IsDead && pController.Health > 0)
                     {
                         float distanceToPlayer = Vector2.Distance(transform.position, pController.transform.position);
-
-                        // comprobamos la distancia
                         if (distanceToPlayer < minDistance)
                         {
                             minDistance = distanceToPlayer;
@@ -107,11 +105,11 @@ public class EnemyChaseController : EnemyController
         }
         else
         {
-            if (rb.linearVelocity.sqrMagnitude > 0.01f && playerTransform != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-                playerTransform = null; // Se quita la referencia del jugador muerto
-            }
+            if (playerTransform != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            playerTransform = null;
+        }
             wanderMovement();
         }
     }

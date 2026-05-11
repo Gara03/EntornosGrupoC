@@ -364,12 +364,20 @@ public class PlayerController : CharController
 
         base.Die();
 
+        SetDeadStatusServerRpc(true);
+
         // Dispara evento de muerte
         GameEvents.PlayerDied(OwnerClientId);
 
         NotifyDeathServerRpc();
 
         GameManager.Instance?.TriggerGameOver();
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SetDeadStatusServerRpc(bool status)
+    {
+        this.isDead = status;
     }
 
     /// <summary>
