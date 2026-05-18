@@ -20,8 +20,7 @@ public class MapNetworkManager : NetworkBehaviour
     public GameObject playerPrefab;
 
     /// <summary>
-    /// Si se trata del Host, genera una semilla de forma aleatoria para generar el mapa y espera a que carguen todos los jugadores
-    /// Si se trata de los clientes, se genera el mapa a partir de la semilla del Host 
+    /// Metodo para instanciar el mapa
     /// </summary> 
     private void Awake()
     {
@@ -34,7 +33,9 @@ public class MapNetworkManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// Método que sincroniza el contador de enemigos y recolectables y genera el mismo mapa a partir de la semilla para todos los clientes y host
+    /// Método que sincroniza el contador de enemigos y recolectables
+    /// Si se trata del Host, genera una semilla de forma aleatoria para generar el mapa y espera a que carguen todos los jugadores
+    /// Si se trata de los clientes, se genera el mapa a partir de la semilla del Host 
     /// </summary> 
     public override void OnNetworkSpawn()
     {
@@ -63,6 +64,7 @@ public class MapNetworkManager : NetworkBehaviour
             if (GameManager.Instance != null) GameManager.Instance.GlobalDiamonds = newVal;
         };
 
+        // Si es el host, genera la semilla
         if (IsServer)
         {
             int randomSeed = Random.Range(1, 999999);
@@ -71,7 +73,7 @@ public class MapNetworkManager : NetworkBehaviour
 
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnAllClientsLoaded;
         }
-        else
+        else // Si es un cliente, obtiene la semilla generada por el host
         {
             if (mapSeed.Value != 0) levelGenerator.StartGenerationWithSeed(mapSeed.Value);
             mapSeed.OnValueChanged += (oldVal, newVal) => {

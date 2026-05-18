@@ -5,13 +5,10 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(UniqueEntity))] // Requiere UniqueEntity
 public class ChestController : NetworkBehaviour
 {
-
     private bool collected = false;
-    
-    // Nueva variable para UniqueEntity
     private UniqueEntity uniqueEntity;
     
-    // Propiedades de acceso rápido
+    // Propiedades de acceso
     public string EntityId => uniqueEntity?.EntityId ?? "UNKNOWN";
     public EntityType EntityType => uniqueEntity?.Type ?? EntityType.Interactive_Chest;
     

@@ -119,7 +119,7 @@ public class CharSelectionNetworkManager : NetworkBehaviour
                 break;
         }
 
-        if (success)
+        if (success) // Si el personaje esta disponible lo selecciona
         {
             playerSelections[clientId] = requestedChar;
             ConfirmCharacterRpc(requestedChar, clientId);

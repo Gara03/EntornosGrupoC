@@ -25,7 +25,6 @@ public class EnemySpawner : NetworkBehaviour
         {
             timer = spawnInterval;
         }
-        
     }
 
     /// <summary>

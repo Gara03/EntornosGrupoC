@@ -60,6 +60,9 @@ public class InGameManager : NetworkBehaviour
         Debug.Log("[Host] Conexión rechazada: Alguien intentó unirse a una partida en curso.");
     }
 
+    /// <summary>
+    /// Metodo que oculta los paneles de mensajes al iniciar.
+    /// </summary>
     private void Start()
     {
         if (confirmationPanel != null) confirmationPanel.SetActive(false);

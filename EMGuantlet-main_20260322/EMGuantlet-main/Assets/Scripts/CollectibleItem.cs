@@ -18,6 +18,9 @@ public class CollectibleItem : NetworkBehaviour
         myEntity = GetComponent<UniqueEntity>();
     }
 
+    /// <summary>
+    /// Metodo que spawnea los diamantes y llaves como network objects.
+    /// </summary>
     public override void OnNetworkSpawn()
     {
         if (IsServer && !IsSpawned)
@@ -26,14 +29,19 @@ public class CollectibleItem : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que detecta la interacción con el jugador e incrementa los contadores.
+    /// </summary>
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Comprobaciones
         if (!IsServer) return;
 
         if (isCollected) return;
 
         if (!collision.CompareTag(playerTag)) return;
 
+        // Si ha colisionado con el jugador
         PlayerController player = collision.GetComponent<PlayerController>();
         if (player == null)
         {
@@ -45,6 +53,7 @@ public class CollectibleItem : NetworkBehaviour
 
         bool success = false;
 
+        // Se añade al inventario del jugador segun el tipo de objeto que se trate
         if (collectibleType == CollectibleType.Key)
         {
             success = GameManager.Instance.TryAddKey(player.OwnerClientId, myEntity.EntityId);
